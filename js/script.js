@@ -1,10 +1,208 @@
 // ==========================================
 // SMART FOOD WASTE MANAGEMENT SYSTEM
 // JavaScript File
+// Firebase Shared Database Version
 // ==========================================
 
 
-// ---------- DEFAULT ADMIN ACCOUNT ----------
+// ==========================================
+// FIREBASE CONFIGURATION
+// ==========================================
+
+const firebaseConfig = {
+
+    apiKey: "AIzaSyBobsVbRVHTwk7msxkCVqSEBW3VF__E__o",
+
+    authDomain:
+        "smart-food-waste-mngmt-2026.firebaseapp.com",
+
+    databaseURL:
+        "https://smart-food-waste-mngmt-2026-default-rtdb.firebaseio.com",
+
+    projectId:
+        "smart-food-waste-mngmt-2026",
+
+    storageBucket:
+        "smart-food-waste-mngmt-2026.firebasestorage.app",
+
+    messagingSenderId:
+        "901436371265",
+
+    appId:
+        "1:901436371265:web:b3860779c7d75e43d5b1c0",
+
+    measurementId:
+        "G-8L4WFDV799"
+
+};
+
+
+// ==========================================
+// FIREBASE INITIALIZATION
+// ==========================================
+
+let firebaseDatabase = null;
+
+const firebaseReady = (async function () {
+
+    try {
+
+        const firebaseAppModule =
+            await import(
+                "https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js"
+            );
+
+        const firebaseDatabaseModule =
+            await import(
+                "https://www.gstatic.com/firebasejs/12.19.0/firebase-database.js"
+            );
+
+        const app =
+            firebaseAppModule.initializeApp(firebaseConfig);
+
+        firebaseDatabase =
+            firebaseDatabaseModule.getDatabase(app);
+
+        console.log("Firebase connected successfully.");
+
+        return true;
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "Firebase connection failed:",
+            error
+        );
+
+        alert(
+            "Unable to connect to the online database. Please check your internet connection."
+        );
+
+        return false;
+
+    }
+
+})();
+
+
+// ==========================================
+// HELPER FUNCTIONS
+// ==========================================
+
+async function getFirebaseData(path) {
+
+    const connected =
+        await firebaseReady;
+
+    if (!connected) {
+
+        return {};
+
+    }
+
+    const {
+        ref,
+        get
+    } =
+        await import(
+            "https://www.gstatic.com/firebasejs/12.19.0/firebase-database.js"
+        );
+
+    const databaseReference =
+        ref(
+            firebaseDatabase,
+            path
+        );
+
+    const snapshot =
+        await get(databaseReference);
+
+    if (snapshot.exists()) {
+
+        return snapshot.val();
+
+    }
+
+    return {};
+
+}
+
+
+async function saveFirebaseData(path, data) {
+
+    const connected =
+        await firebaseReady;
+
+    if (!connected) {
+
+        return false;
+
+    }
+
+    const {
+        ref,
+        set
+    } =
+        await import(
+            "https://www.gstatic.com/firebasejs/12.19.0/firebase-database.js"
+        );
+
+    const databaseReference =
+        ref(
+            firebaseDatabase,
+            path
+        );
+
+    await set(
+        databaseReference,
+        data
+    );
+
+    return true;
+
+}
+
+
+async function updateFirebaseData(path, data) {
+
+    const connected =
+        await firebaseReady;
+
+    if (!connected) {
+
+        return false;
+
+    }
+
+    const {
+        ref,
+        update
+    } =
+        await import(
+            "https://www.gstatic.com/firebasejs/12.19.0/firebase-database.js"
+        );
+
+    const databaseReference =
+        ref(
+            firebaseDatabase,
+            path
+        );
+
+    await update(
+        databaseReference,
+        data
+    );
+
+    return true;
+
+}
+
+
+// ==========================================
+// DEFAULT ADMIN ACCOUNT
+// ==========================================
 
 function createDefaultAdmin() {
 
@@ -55,31 +253,62 @@ function createDefaultAdmin() {
 }
 
 
-
-// ---------- USER REGISTRATION ----------
+// ==========================================
+// USER REGISTRATION
+// ==========================================
 
 function registerUser() {
 
-    const name = document.getElementById("name").value.trim();
-    const email = document.getElementById("email").value.trim();
-    const password = document.getElementById("password").value;
-    const role = document.getElementById("role").value;
+    const name =
+        document.getElementById("name").value.trim();
 
-    if (name === "" || email === "" || password === "" || role === "") {
+    const email =
+        document.getElementById("email").value.trim();
+
+    const password =
+        document.getElementById("password").value;
+
+    const role =
+        document.getElementById("role").value;
+
+
+    if (
+        name === "" ||
+        email === "" ||
+        password === "" ||
+        role === ""
+    ) {
+
         alert("Please fill in all fields.");
+
         return;
+
     }
+
 
     let users =
-        JSON.parse(localStorage.getItem("smartfood_users")) || [];
+        JSON.parse(
+            localStorage.getItem("smartfood_users")
+        ) || [];
+
 
     const existingUser =
-        users.find(user => user.email === email);
+        users.find(
+            user =>
+                user.email === email
+        );
+
 
     if (existingUser) {
-        alert("An account with this email already exists.");
+
+        alert(
+            "An account with this email already exists."
+        );
+
         return;
+
     }
+
 
     const newUser = {
 
@@ -95,21 +324,30 @@ function registerUser() {
 
     };
 
+
     users.push(newUser);
+
 
     localStorage.setItem(
         "smartfood_users",
         JSON.stringify(users)
     );
 
-    alert("Registration successful!");
 
-    window.location.href = "login.html";
+    alert(
+        "Registration successful!"
+    );
+
+
+    window.location.href =
+        "login.html";
+
 }
 
 
-
-// ---------- USER LOGIN ----------
+// ==========================================
+// USER LOGIN
+// ==========================================
 
 function loginUser() {
 
@@ -123,9 +361,15 @@ function loginUser() {
         document.getElementById("password").value;
 
 
-    if (role === "" || email === "" || password === "") {
+    if (
+        role === "" ||
+        email === "" ||
+        password === ""
+    ) {
 
-        alert("Please fill in all fields.");
+        alert(
+            "Please fill in all fields."
+        );
 
         return;
 
@@ -164,7 +408,9 @@ function loginUser() {
     );
 
 
-    alert("Login successful!");
+    alert(
+        "Login successful!"
+    );
 
 
     if (role === "provider") {
@@ -191,10 +437,11 @@ function loginUser() {
 }
 
 
+// ==========================================
+// ADD SURPLUS FOOD
+// ==========================================
 
-// ---------- ADD SURPLUS FOOD ----------
-
-function addFood() {
+async function addFood() {
 
     const foodName =
         document.getElementById("food-name").value.trim();
@@ -232,7 +479,9 @@ function addFood() {
         location === ""
     ) {
 
-        alert("Please fill in all required fields.");
+        alert(
+            "Please fill in all required fields."
+        );
 
         return;
 
@@ -241,7 +490,9 @@ function addFood() {
 
     const currentUser =
         JSON.parse(
-            localStorage.getItem("smartfood_currentUser")
+            localStorage.getItem(
+                "smartfood_currentUser"
+            )
         );
 
 
@@ -251,75 +502,119 @@ function addFood() {
             "Please login as a Food Provider first."
         );
 
-        window.location.href = "login.html";
+        window.location.href =
+            "login.html";
 
         return;
 
     }
 
 
-    let foods =
-        JSON.parse(
-            localStorage.getItem("smartfood_foods")
-        ) || [];
-
-
     const newFood = {
 
         id: Date.now(),
 
-        providerId: currentUser.id,
+        providerId:
+            currentUser.id,
 
-        providerName: currentUser.name,
+        providerName:
+            currentUser.name,
 
-        foodName: foodName,
+        foodName:
+            foodName,
 
-        foodType: foodType,
+        foodType:
+            foodType,
 
-        quantity: quantity,
+        quantity:
+            quantity,
 
-        availableFrom: availableFrom,
+        availableFrom:
+            availableFrom,
 
-        availableUntil: availableUntil,
+        availableUntil:
+            availableUntil,
 
-        location: location,
+        location:
+            location,
 
-        recipientType: recipientType,
+        recipientType:
+            recipientType,
 
-        description: description,
+        description:
+            description,
 
-        status: "available"
+        status:
+            "available"
 
     };
 
 
-    foods.push(newFood);
+    try {
+
+        await saveFirebaseData(
+            "foods/" + newFood.id,
+            newFood
+        );
 
 
-    localStorage.setItem(
-        "smartfood_foods",
-        JSON.stringify(foods)
-    );
+        alert(
+            "Surplus food published successfully!"
+        );
 
 
-    alert(
-        "Surplus food published successfully!"
-    );
+        window.location.href =
+            "provider-dashboard.html";
 
+    }
 
-    window.location.href =
-        "provider-dashboard.html";
+    catch (error) {
+
+        console.error(error);
+
+        alert(
+            "Unable to publish food. Please try again."
+        );
+
+    }
 
 }
 
 
+// ==========================================
+// GET ALL FOOD FROM FIREBASE
+// ==========================================
 
-// ---------- LOAD PROVIDER FOOD LISTINGS ----------
+async function getFoods() {
 
-function loadProviderFoods() {
+    const data =
+        await getFirebaseData(
+            "foods"
+        );
+
+
+    if (!data) {
+
+        return [];
+
+    }
+
+
+    return Object.values(data);
+
+}
+
+
+// ==========================================
+// LOAD PROVIDER FOOD LISTINGS
+// ==========================================
+
+async function loadProviderFoods() {
 
     const foodList =
-        document.getElementById("foodList");
+        document.getElementById(
+            "foodList"
+        );
 
 
     if (!foodList) {
@@ -329,18 +624,44 @@ function loadProviderFoods() {
     }
 
 
-    const foods =
+    const currentUser =
         JSON.parse(
-            localStorage.getItem("smartfood_foods")
-        ) || [];
+            localStorage.getItem(
+                "smartfood_currentUser"
+            )
+        );
 
 
-    if (foods.length === 0) {
+    if (!currentUser) {
+
+        return;
+
+    }
+
+
+    const foods =
+        await getFoods();
+
+
+    const myFoods =
+        foods.filter(function(food) {
+
+            return (
+                String(food.providerId) ===
+                String(currentUser.id)
+            );
+
+        });
+
+
+    if (myFoods.length === 0) {
 
         foodList.innerHTML = `
+
             <p style="padding: 20px;">
                 No surplus food listings yet.
             </p>
+
         `;
 
         return;
@@ -351,7 +672,7 @@ function loadProviderFoods() {
     foodList.innerHTML = "";
 
 
-    foods.forEach(function(food) {
+    myFoods.forEach(function(food) {
 
         const foodItem =
             document.createElement("div");
@@ -387,7 +708,7 @@ function loadProviderFoods() {
             <div class="food-action">
 
                 <button
-                    onclick="viewFood(${food.id})"
+                    onclick="viewFood('${food.id}')"
                 >
                     View
                 </button>
@@ -404,8 +725,9 @@ function loadProviderFoods() {
 }
 
 
-
-// ---------- VIEW FOOD ----------
+// ==========================================
+// VIEW FOOD
+// ==========================================
 
 function viewFood(foodId) {
 
@@ -421,10 +743,11 @@ function viewFood(foodId) {
 }
 
 
+// ==========================================
+// AVAILABLE FOOD MARKETPLACE
+// ==========================================
 
-// ---------- AVAILABLE FOOD MARKETPLACE ----------
-
-function loadAvailableFoods() {
+async function loadAvailableFoods() {
 
     const foodList =
         document.getElementById(
@@ -440,18 +763,19 @@ function loadAvailableFoods() {
 
 
     const foods =
-        JSON.parse(
-            localStorage.getItem("smartfood_foods")
-        ) || [];
+        await getFoods();
 
 
-    displayAvailableFoods(foods);
+    displayAvailableFoods(
+        foods
+    );
 
 }
 
 
-
-// ---------- DISPLAY FOOD LISTINGS ----------
+// ==========================================
+// DISPLAY FOOD LISTINGS
+// ==========================================
 
 function displayAvailableFoods(foods) {
 
@@ -468,7 +792,15 @@ function displayAvailableFoods(foods) {
     }
 
 
-    if (foods.length === 0) {
+    const availableFoods =
+        foods.filter(function(food) {
+
+            return food.status === "available";
+
+        });
+
+
+    if (availableFoods.length === 0) {
 
         foodList.innerHTML = `
 
@@ -501,14 +833,7 @@ function displayAvailableFoods(foods) {
     foodList.innerHTML = "";
 
 
-    foods.forEach(function(food) {
-
-        if (food.status !== "available") {
-
-            return;
-
-        }
-
+    availableFoods.forEach(function(food) {
 
         const foodCard =
             document.createElement("div");
@@ -583,7 +908,7 @@ function displayAvailableFoods(foods) {
             <a
                 href="food-details.html"
                 class="market-view-btn"
-                onclick="selectFood(${food.id})"
+                onclick="selectFood('${food.id}')"
             >
                 View Details →
             </a>
@@ -591,15 +916,18 @@ function displayAvailableFoods(foods) {
         `;
 
 
-        foodList.appendChild(foodCard);
+        foodList.appendChild(
+            foodCard
+        );
 
     });
 
 }
 
 
-
-// ---------- SELECT FOOD ----------
+// ==========================================
+// SELECT FOOD
+// ==========================================
 
 function selectFood(foodId) {
 
@@ -611,19 +939,26 @@ function selectFood(foodId) {
 }
 
 
+// ==========================================
+// FILTER FOOD
+// ==========================================
 
-// ---------- FILTER FOOD ----------
-
-function filterFoods() {
+async function filterFoods() {
 
     const searchInput =
-        document.getElementById("foodSearch");
+        document.getElementById(
+            "foodSearch"
+        );
 
     const typeFilter =
-        document.getElementById("foodTypeFilter");
+        document.getElementById(
+            "foodTypeFilter"
+        );
 
     const locationFilter =
-        document.getElementById("locationFilter");
+        document.getElementById(
+            "locationFilter"
+        );
 
 
     if (
@@ -638,7 +973,9 @@ function filterFoods() {
 
 
     const search =
-        searchInput.value.trim().toLowerCase();
+        searchInput.value
+            .trim()
+            .toLowerCase();
 
 
     const selectedType =
@@ -650,9 +987,7 @@ function filterFoods() {
 
 
     const foods =
-        JSON.parse(
-            localStorage.getItem("smartfood_foods")
-        ) || [];
+        await getFoods();
 
 
     const filteredFoods =
@@ -688,18 +1023,23 @@ function filterFoods() {
         });
 
 
-    displayAvailableFoods(filteredFoods);
+    displayAvailableFoods(
+        filteredFoods
+    );
 
 }
 
 
+// ==========================================
+// FOOD DETAILS
+// ==========================================
 
-// ---------- FOOD DETAILS ----------
-
-function loadFoodDetails() {
+async function loadFoodDetails() {
 
     const foodNameElement =
-        document.getElementById("foodName");
+        document.getElementById(
+            "foodName"
+        );
 
 
     if (!foodNameElement) {
@@ -710,21 +1050,20 @@ function loadFoodDetails() {
 
 
     const selectedFoodId =
-        Number(
-            localStorage.getItem("selectedFoodId")
+        localStorage.getItem(
+            "selectedFoodId"
         );
 
 
     const foods =
-        JSON.parse(
-            localStorage.getItem("smartfood_foods")
-        ) || [];
+        await getFoods();
 
 
     const food =
         foods.find(function(item) {
 
-            return item.id === selectedFoodId;
+            return String(item.id) ===
+                String(selectedFoodId);
 
         });
 
@@ -827,34 +1166,36 @@ function loadFoodDetails() {
 }
 
 
+// ==========================================
+// REQUEST FOOD
+// ==========================================
 
-// ---------- REQUEST FOOD ----------
-
-function requestFood() {
+async function requestFood() {
 
     const selectedFoodId =
-        Number(
-            localStorage.getItem("selectedFoodId")
+        localStorage.getItem(
+            "selectedFoodId"
         );
 
 
     const foods =
-        JSON.parse(
-            localStorage.getItem("smartfood_foods")
-        ) || [];
+        await getFoods();
 
 
     const food =
         foods.find(function(item) {
 
-            return item.id === selectedFoodId;
+            return String(item.id) ===
+                String(selectedFoodId);
 
         });
 
 
     if (!food) {
 
-        alert("Food listing not found.");
+        alert(
+            "Food listing not found."
+        );
 
         return;
 
@@ -863,7 +1204,9 @@ function requestFood() {
 
     const currentUser =
         JSON.parse(
-            localStorage.getItem("smartfood_currentUser")
+            localStorage.getItem(
+                "smartfood_currentUser"
+            )
         );
 
 
@@ -881,7 +1224,10 @@ function requestFood() {
     }
 
 
-    if (currentUser.role !== "recipient") {
+    if (
+        currentUser.role !==
+        "recipient"
+    ) {
 
         alert(
             "Only recipients can request surplus food."
@@ -928,63 +1274,101 @@ function requestFood() {
     }
 
 
-    let requests =
-        JSON.parse(
-            localStorage.getItem(
-                "smartfood_requests"
-            )
-        ) || [];
-
-
     const newRequest = {
 
         id: Date.now(),
 
-        foodId: food.id,
+        foodId:
+            food.id,
 
-        providerId: food.providerId,
+        providerId:
+            food.providerId,
 
-        providerName: food.providerName,
+        providerName:
+            food.providerName,
 
-        foodName: food.foodName,
+        foodName:
+            food.foodName,
 
-        recipientId: currentUser.id,
+        recipientId:
+            currentUser.id,
 
-        recipientName: currentUser.name,
+        recipientName:
+            currentUser.name,
 
-        quantity: quantity,
+        quantity:
+            quantity,
 
-        message: message,
+        message:
+            message,
 
-        status: "pending"
+        status:
+            "pending"
 
     };
 
 
-    requests.push(newRequest);
+    try {
+
+        await saveFirebaseData(
+            "requests/" +
+            newRequest.id,
+            newRequest
+        );
 
 
-    localStorage.setItem(
-        "smartfood_requests",
-        JSON.stringify(requests)
-    );
+        alert(
+            "Food request sent successfully!"
+        );
 
 
-    alert(
-        "Food request sent successfully!"
-    );
+        window.location.href =
+            "recipient-dashboard.html";
 
+    }
 
-    window.location.href =
-        "recipient-dashboard.html";
+    catch (error) {
+
+        console.error(error);
+
+        alert(
+            "Unable to send request. Please try again."
+        );
+
+    }
 
 }
 
 
+// ==========================================
+// GET ALL REQUESTS FROM FIREBASE
+// ==========================================
 
-// ---------- RECIPIENT DASHBOARD ----------
+async function getRequests() {
 
-function loadRecipientDashboard() {
+    const data =
+        await getFirebaseData(
+            "requests"
+        );
+
+
+    if (!data) {
+
+        return [];
+
+    }
+
+
+    return Object.values(data);
+
+}
+
+
+// ==========================================
+// RECIPIENT DASHBOARD
+// ==========================================
+
+async function loadRecipientDashboard() {
 
     const welcomeMessage =
         document.getElementById(
@@ -1009,7 +1393,9 @@ function loadRecipientDashboard() {
 
     if (!currentUser) {
 
-        alert("Please login first.");
+        alert(
+            "Please login first."
+        );
 
         window.location.href =
             "login.html";
@@ -1026,17 +1412,14 @@ function loadRecipientDashboard() {
 
 
     const foods =
-        JSON.parse(
-            localStorage.getItem(
-                "smartfood_foods"
-            )
-        ) || [];
+        await getFoods();
 
 
     const availableFoods =
         foods.filter(function(food) {
 
-            return food.status === "available";
+            return food.status ===
+                "available";
 
         });
 
@@ -1110,7 +1493,7 @@ function loadRecipientDashboard() {
                         <a
                             href="food-details.html"
                             class="food-view-link"
-                            onclick="selectFood(${food.id})"
+                            onclick="selectFood('${food.id}')"
                         >
                             View
                         </a>
@@ -1120,7 +1503,9 @@ function loadRecipientDashboard() {
                 `;
 
 
-                foodList.appendChild(foodItem);
+                foodList.appendChild(
+                    foodItem
+                );
 
             });
 
@@ -1128,17 +1513,14 @@ function loadRecipientDashboard() {
 
 
     const allRequests =
-        JSON.parse(
-            localStorage.getItem(
-                "smartfood_requests"
-            )
-        ) || [];
+        await getRequests();
 
 
     const myRequests =
         allRequests.filter(function(request) {
 
-            return request.recipientId === currentUser.id;
+            return String(request.recipientId) ===
+                String(currentUser.id);
 
         });
 
@@ -1171,9 +1553,12 @@ function loadRecipientDashboard() {
         myRequests.filter(function(request) {
 
             return (
-                request.status === "pending" ||
-                request.status === "accepted" ||
-                request.status === "ready"
+                request.status ===
+                "pending" ||
+                request.status ===
+                "accepted" ||
+                request.status ===
+                "ready"
             );
 
         });
@@ -1203,8 +1588,10 @@ function loadRecipientDashboard() {
             .filter(function(request) {
 
                 return (
-                    request.status === "completed" ||
-                    request.status === "received"
+                    request.status ===
+                    "completed" ||
+                    request.status ===
+                    "received"
                 );
 
             })
@@ -1212,7 +1599,9 @@ function loadRecipientDashboard() {
                 function(total, request) {
 
                     return total +
-                        Number(request.quantity);
+                        Number(
+                            request.quantity
+                        );
 
                 },
                 0
@@ -1291,35 +1680,50 @@ function loadRecipientDashboard() {
                 request.status;
 
 
-            if (request.status === "pending") {
+            if (
+                request.status ===
+                "pending"
+            ) {
 
                 statusText =
                     "Pending";
 
             }
 
-            else if (request.status === "accepted") {
+            else if (
+                request.status ===
+                "accepted"
+            ) {
 
                 statusText =
                     "Accepted";
 
             }
 
-            else if (request.status === "ready") {
+            else if (
+                request.status ===
+                "ready"
+            ) {
 
                 statusText =
                     "Ready";
 
             }
 
-            else if (request.status === "completed") {
+            else if (
+                request.status ===
+                "completed"
+            ) {
 
                 statusText =
                     "Completed";
 
             }
 
-            else if (request.status === "received") {
+            else if (
+                request.status ===
+                "received"
+            ) {
 
                 statusText =
                     "Received";
@@ -1361,7 +1765,9 @@ function loadRecipientDashboard() {
             `;
 
 
-            requestList.appendChild(requestItem);
+            requestList.appendChild(
+                requestItem
+            );
 
         });
 
@@ -1386,10 +1792,11 @@ function loadRecipientDashboard() {
 }
 
 
+// ==========================================
+// PROVIDER DASHBOARD
+// ==========================================
 
-// ---------- PROVIDER DASHBOARD ----------
-
-function loadProviderDashboard() {
+async function loadProviderDashboard() {
 
     const requestList =
         document.getElementById(
@@ -1414,7 +1821,9 @@ function loadProviderDashboard() {
 
     if (!currentUser) {
 
-        alert("Please login first.");
+        alert(
+            "Please login first."
+        );
 
         window.location.href =
             "login.html";
@@ -1441,17 +1850,14 @@ function loadProviderDashboard() {
 
 
     const foods =
-        JSON.parse(
-            localStorage.getItem(
-                "smartfood_foods"
-            )
-        ) || [];
+        await getFoods();
 
 
     const myFoods =
         foods.filter(function(food) {
 
-            return food.providerId === currentUser.id;
+            return String(food.providerId) ===
+                String(currentUser.id);
 
         });
 
@@ -1493,7 +1899,10 @@ function loadProviderDashboard() {
                 "available-status";
 
 
-            if (food.status !== "available") {
+            if (
+                food.status !==
+                "available"
+            ) {
 
                 statusClass =
                     "pending-status";
@@ -1505,14 +1914,20 @@ function loadProviderDashboard() {
                 food.status;
 
 
-            if (food.status === "available") {
+            if (
+                food.status ===
+                "available"
+            ) {
 
                 statusText =
                     "Available";
 
             }
 
-            else if (food.status === "completed") {
+            else if (
+                food.status ===
+                "completed"
+            ) {
 
                 statusText =
                     "Completed";
@@ -1548,7 +1963,7 @@ function loadProviderDashboard() {
                 <div class="food-action">
 
                     <button
-                        onclick="viewFood(${food.id})"
+                        onclick="viewFood('${food.id}')"
                     >
                         View
                     </button>
@@ -1558,7 +1973,9 @@ function loadProviderDashboard() {
             `;
 
 
-            foodList.appendChild(foodItem);
+            foodList.appendChild(
+                foodItem
+            );
 
         });
 
@@ -1566,17 +1983,14 @@ function loadProviderDashboard() {
 
 
     const allRequests =
-        JSON.parse(
-            localStorage.getItem(
-                "smartfood_requests"
-            )
-        ) || [];
+        await getRequests();
 
 
     const providerRequests =
         allRequests.filter(function(request) {
 
-            return request.providerId === currentUser.id;
+            return String(request.providerId) ===
+                String(currentUser.id);
 
         });
 
@@ -1584,7 +1998,8 @@ function loadProviderDashboard() {
     const pendingRequests =
         providerRequests.filter(function(request) {
 
-            return request.status === "pending";
+            return request.status ===
+                "pending";
 
         });
 
@@ -1644,42 +2059,60 @@ function loadProviderDashboard() {
                 request.status;
 
 
-            if (request.status === "pending") {
+            if (
+                request.status ===
+                "pending"
+            ) {
 
                 statusText =
                     "Pending";
 
             }
 
-            else if (request.status === "accepted") {
+            else if (
+                request.status ===
+                "accepted"
+            ) {
 
                 statusText =
                     "Accepted";
 
             }
 
-            else if (request.status === "rejected") {
+            else if (
+                request.status ===
+                "rejected"
+            ) {
 
                 statusText =
                     "Rejected";
 
             }
 
-            else if (request.status === "ready") {
+            else if (
+                request.status ===
+                "ready"
+            ) {
 
                 statusText =
                     "Ready";
 
             }
 
-            else if (request.status === "completed") {
+            else if (
+                request.status ===
+                "completed"
+            ) {
 
                 statusText =
                     "Completed";
 
             }
 
-            else if (request.status === "received") {
+            else if (
+                request.status ===
+                "received"
+            ) {
 
                 statusText =
                     "Received";
@@ -1690,9 +2123,10 @@ function loadProviderDashboard() {
             let buttons = "";
 
 
-            // PENDING REQUEST
-
-            if (request.status === "pending") {
+            if (
+                request.status ===
+                "pending"
+            ) {
 
                 buttons = `
 
@@ -1700,14 +2134,14 @@ function loadProviderDashboard() {
 
                         <button
                             class="accept-btn"
-                            onclick="acceptRequest(${request.id})"
+                            onclick="acceptRequest('${request.id}')"
                         >
                             Accept
                         </button>
 
                         <button
                             class="reject-btn"
-                            onclick="rejectRequest(${request.id})"
+                            onclick="rejectRequest('${request.id}')"
                         >
                             Reject
                         </button>
@@ -1719,9 +2153,10 @@ function loadProviderDashboard() {
             }
 
 
-            // ACCEPTED REQUEST
-
-            else if (request.status === "accepted") {
+            else if (
+                request.status ===
+                "accepted"
+            ) {
 
                 buttons = `
 
@@ -1729,7 +2164,7 @@ function loadProviderDashboard() {
 
                         <button
                             class="accept-btn"
-                            onclick="completeDonation(${request.id})"
+                            onclick="completeDonation('${request.id}')"
                         >
                             Mark Donation Complete
                         </button>
@@ -1740,8 +2175,6 @@ function loadProviderDashboard() {
 
             }
 
-
-            // COMPLETED / REJECTED / OTHER REQUESTS
 
             else {
 
@@ -1789,21 +2222,23 @@ function loadProviderDashboard() {
             `;
 
 
-            requestList.appendChild(requestItem);
+            requestList.appendChild(
+                requestItem
+            );
 
         });
 
     }
 
 
-    // ---------- CALCULATE DONATED MEALS ----------
-
     const completedRequests =
         providerRequests.filter(function(request) {
 
             return (
-                request.status === "completed" ||
-                request.status === "received"
+                request.status ===
+                "completed" ||
+                request.status ===
+                "received"
             );
 
         });
@@ -1814,7 +2249,9 @@ function loadProviderDashboard() {
             function(total, request) {
 
                 return total +
-                    Number(request.quantity);
+                    Number(
+                        request.quantity
+                    );
 
             },
             0
@@ -1834,20 +2271,21 @@ function loadProviderDashboard() {
         donatedMeals;
 
 
-    // ---------- CALCULATE SURPLUS ----------
-
     const surplusMeals =
         myFoods
             .filter(function(food) {
 
-                return food.status === "available";
+                return food.status ===
+                    "available";
 
             })
             .reduce(
                 function(total, food) {
 
                     return total +
-                        Number(food.quantity);
+                        Number(
+                            food.quantity
+                        );
 
                 },
                 0
@@ -1863,30 +2301,30 @@ function loadProviderDashboard() {
 }
 
 
+// ==========================================
+// ACCEPT REQUEST
+// ==========================================
 
-// ---------- ACCEPT REQUEST ----------
-
-function acceptRequest(requestId) {
+async function acceptRequest(requestId) {
 
     const requests =
-        JSON.parse(
-            localStorage.getItem(
-                "smartfood_requests"
-            )
-        ) || [];
+        await getRequests();
 
 
     const request =
         requests.find(function(item) {
 
-            return item.id === requestId;
+            return String(item.id) ===
+                String(requestId);
 
         });
 
 
     if (!request) {
 
-        alert("Request not found.");
+        alert(
+            "Request not found."
+        );
 
         return;
 
@@ -1894,31 +2332,33 @@ function acceptRequest(requestId) {
 
 
     const foods =
-        JSON.parse(
-            localStorage.getItem(
-                "smartfood_foods"
-            )
-        ) || [];
+        await getFoods();
 
 
     const food =
         foods.find(function(item) {
 
-            return item.id === request.foodId;
+            return String(item.id) ===
+                String(request.foodId);
 
         });
 
 
     if (!food) {
 
-        alert("Food listing not found.");
+        alert(
+            "Food listing not found."
+        );
 
         return;
 
     }
 
 
-    if (request.quantity > food.quantity) {
+    if (
+        Number(request.quantity) >
+        Number(food.quantity)
+    ) {
 
         alert(
             "There is not enough food available for this request."
@@ -1933,9 +2373,10 @@ function acceptRequest(requestId) {
         "accepted";
 
 
-    localStorage.setItem(
-        "smartfood_requests",
-        JSON.stringify(requests)
+    await saveFirebaseData(
+        "requests/" +
+        request.id,
+        request
     );
 
 
@@ -1949,30 +2390,30 @@ function acceptRequest(requestId) {
 }
 
 
+// ==========================================
+// REJECT REQUEST
+// ==========================================
 
-// ---------- REJECT REQUEST ----------
-
-function rejectRequest(requestId) {
+async function rejectRequest(requestId) {
 
     const requests =
-        JSON.parse(
-            localStorage.getItem(
-                "smartfood_requests"
-            )
-        ) || [];
+        await getRequests();
 
 
     const request =
         requests.find(function(item) {
 
-            return item.id === requestId;
+            return String(item.id) ===
+                String(requestId);
 
         });
 
 
     if (!request) {
 
-        alert("Request not found.");
+        alert(
+            "Request not found."
+        );
 
         return;
 
@@ -1983,9 +2424,10 @@ function rejectRequest(requestId) {
         "rejected";
 
 
-    localStorage.setItem(
-        "smartfood_requests",
-        JSON.stringify(requests)
+    await saveFirebaseData(
+        "requests/" +
+        request.id,
+        request
     );
 
 
@@ -1999,37 +2441,40 @@ function rejectRequest(requestId) {
 }
 
 
+// ==========================================
+// COMPLETE DONATION
+// ==========================================
 
-// ---------- COMPLETE DONATION ----------
-
-function completeDonation(requestId) {
+async function completeDonation(requestId) {
 
     const requests =
-        JSON.parse(
-            localStorage.getItem(
-                "smartfood_requests"
-            )
-        ) || [];
+        await getRequests();
 
 
     const request =
         requests.find(function(item) {
 
-            return item.id === requestId;
+            return String(item.id) ===
+                String(requestId);
 
         });
 
 
     if (!request) {
 
-        alert("Request not found.");
+        alert(
+            "Request not found."
+        );
 
         return;
 
     }
 
 
-    if (request.status !== "accepted") {
+    if (
+        request.status !==
+        "accepted"
+    ) {
 
         alert(
             "Only accepted requests can be completed."
@@ -2041,33 +2486,33 @@ function completeDonation(requestId) {
 
 
     const foods =
-        JSON.parse(
-            localStorage.getItem(
-                "smartfood_foods"
-            )
-        ) || [];
+        await getFoods();
 
 
     const food =
         foods.find(function(item) {
 
-            return item.id === request.foodId;
+            return String(item.id) ===
+                String(request.foodId);
 
         });
 
 
     if (!food) {
 
-        alert("Food listing not found.");
+        alert(
+            "Food listing not found."
+        );
 
         return;
 
     }
 
 
-    // Check available quantity
-
-    if (request.quantity > food.quantity) {
+    if (
+        Number(request.quantity) >
+        Number(food.quantity)
+    ) {
 
         alert(
             "There is not enough food available to complete this donation."
@@ -2078,28 +2523,22 @@ function completeDonation(requestId) {
     }
 
 
-    // Reduce food quantity
-
     food.quantity =
         Number(food.quantity) -
         Number(request.quantity);
 
 
-    // Record donated quantity
-
     request.donatedQuantity =
         Number(request.quantity);
 
-
-    // Mark request as completed
 
     request.status =
         "completed";
 
 
-    // If all food has been donated
-
-    if (food.quantity === 0) {
+    if (
+        Number(food.quantity) === 0
+    ) {
 
         food.status =
             "completed";
@@ -2107,19 +2546,17 @@ function completeDonation(requestId) {
     }
 
 
-    // Save updated food listings
-
-    localStorage.setItem(
-        "smartfood_foods",
-        JSON.stringify(foods)
+    await saveFirebaseData(
+        "foods/" +
+        food.id,
+        food
     );
 
 
-    // Save updated requests
-
-    localStorage.setItem(
-        "smartfood_requests",
-        JSON.stringify(requests)
+    await saveFirebaseData(
+        "requests/" +
+        request.id,
+        request
     );
 
 
@@ -2128,35 +2565,34 @@ function completeDonation(requestId) {
     );
 
 
-    // Refresh provider dashboard
-
     loadProviderDashboard();
 
 }
 
 
-
-// ---------- INITIALIZE PAGES ----------
+// ==========================================
+// INITIALIZE PAGES
+// ==========================================
 
 document.addEventListener(
     "DOMContentLoaded",
-    function() {
-
-        // Create the default admin account
-        // automatically when the website loads
+    async function() {
 
         createDefaultAdmin();
 
 
-        loadProviderFoods();
+        await firebaseReady;
 
-        loadAvailableFoods();
 
-        loadFoodDetails();
+        await loadProviderFoods();
 
-        loadRecipientDashboard();
+        await loadAvailableFoods();
 
-        loadProviderDashboard();
+        await loadFoodDetails();
+
+        await loadRecipientDashboard();
+
+        await loadProviderDashboard();
 
     }
 );
