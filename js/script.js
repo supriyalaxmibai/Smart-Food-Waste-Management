@@ -2,6 +2,7 @@
 // SMART FOOD WASTE MANAGEMENT SYSTEM
 // JavaScript File
 // Firebase Shared Database Version
+// Notifications Enabled
 // ==========================================
 
 
@@ -88,7 +89,7 @@ const firebaseReady = (async function () {
 
 
 // ==========================================
-// HELPER FUNCTIONS
+// FIREBASE HELPER FUNCTIONS
 // ==========================================
 
 async function getFirebaseData(path) {
@@ -201,6 +202,444 @@ async function updateFirebaseData(path, data) {
 
 
 // ==========================================
+// POPUP NOTIFICATION SYSTEM
+// ==========================================
+
+function showNotificationPopup(
+    title,
+    message,
+    icon = "🔔"
+) {
+
+    const existingPopup =
+        document.getElementById(
+            "smartfoodNotificationPopup"
+        );
+
+    if (existingPopup) {
+
+        existingPopup.remove();
+
+    }
+
+
+    const popup =
+        document.createElement("div");
+
+    popup.id =
+        "smartfoodNotificationPopup";
+
+
+    popup.innerHTML = `
+
+        <div class="smartfood-notification-icon">
+            ${icon}
+        </div>
+
+        <div class="smartfood-notification-content">
+
+            <strong>
+                ${title}
+            </strong>
+
+            <p>
+                ${message}
+            </p>
+
+        </div>
+
+        <button
+            class="smartfood-notification-close"
+            onclick="closeNotificationPopup()"
+        >
+            ×
+        </button>
+
+    `;
+
+
+    popup.style.position =
+        "fixed";
+
+    popup.style.top =
+        "25px";
+
+    popup.style.right =
+        "25px";
+
+    popup.style.width =
+        "350px";
+
+    popup.style.maxWidth =
+        "calc(100% - 40px)";
+
+    popup.style.background =
+        "#ffffff";
+
+    popup.style.padding =
+        "18px";
+
+    popup.style.borderRadius =
+        "14px";
+
+    popup.style.boxShadow =
+        "0 10px 35px rgba(0,0,0,0.18)";
+
+    popup.style.display =
+        "flex";
+
+    popup.style.alignItems =
+        "flex-start";
+
+    popup.style.gap =
+        "12px";
+
+    popup.style.zIndex =
+        "99999";
+
+    popup.style.border =
+        "1px solid #e5e7eb";
+
+
+    document.body.appendChild(
+        popup
+    );
+
+
+    setTimeout(
+        function() {
+
+            closeNotificationPopup();
+
+        },
+        6000
+    );
+
+}
+
+
+function closeNotificationPopup() {
+
+    const popup =
+        document.getElementById(
+            "smartfoodNotificationPopup"
+        );
+
+    if (popup) {
+
+        popup.remove();
+
+    }
+
+}
+
+
+// ==========================================
+// CHECK NOTIFICATIONS
+// ==========================================
+
+async function checkNotifications() {
+
+    const currentUser =
+        JSON.parse(
+            localStorage.getItem(
+                "smartfood_currentUser"
+            )
+        );
+
+
+    if (!currentUser) {
+
+        return;
+
+    }
+
+
+    const requests =
+        await getRequests();
+
+
+    const myNotifications = [];
+
+
+    // ------------------------------------------
+    // PROVIDER NOTIFICATIONS
+    // ------------------------------------------
+
+    if (
+        currentUser.role ===
+        "provider"
+    ) {
+
+        const providerRequests =
+            requests.filter(
+                function(request) {
+
+                    return String(
+                        request.providerId
+                    ) ===
+                    String(
+                        currentUser.id
+                    );
+
+                }
+            );
+
+
+        providerRequests.forEach(
+            function(request) {
+
+                if (
+                    request.status ===
+                    "pending"
+                ) {
+
+                    myNotifications.push({
+
+                        id:
+                            "provider-pending-" +
+                            request.id,
+
+                        title:
+                            "New Food Request",
+
+                        message:
+                            request.recipientName +
+                            " requested " +
+                            request.quantity +
+                            " meals of " +
+                            request.foodName +
+                            ".",
+
+                        icon:
+                            "📨"
+
+                    });
+
+                }
+
+            }
+        );
+
+    }
+
+
+    // ------------------------------------------
+    // RECIPIENT NOTIFICATIONS
+    // ------------------------------------------
+
+    if (
+        currentUser.role ===
+        "recipient"
+    ) {
+
+        const recipientRequests =
+            requests.filter(
+                function(request) {
+
+                    return String(
+                        request.recipientId
+                    ) ===
+                    String(
+                        currentUser.id
+                    );
+
+                }
+            );
+
+
+        recipientRequests.forEach(
+            function(request) {
+
+
+                if (
+                    request.status ===
+                    "accepted"
+                ) {
+
+                    myNotifications.push({
+
+                        id:
+                            "recipient-accepted-" +
+                            request.id,
+
+                        title:
+                            "Request Accepted",
+
+                        message:
+                            "Your request for " +
+                            request.quantity +
+                            " meals of " +
+                            request.foodName +
+                            " has been accepted.",
+
+                        icon:
+                            "✅"
+
+                    });
+
+                }
+
+
+                else if (
+                    request.status ===
+                    "rejected"
+                ) {
+
+                    myNotifications.push({
+
+                        id:
+                            "recipient-rejected-" +
+                            request.id,
+
+                        title:
+                            "Request Rejected",
+
+                        message:
+                            "Your request for " +
+                            request.foodName +
+                            " was rejected by the provider.",
+
+                        icon:
+                            "❌"
+
+                    });
+
+                }
+
+
+                else if (
+                    request.status ===
+                    "completed"
+                ) {
+
+                    myNotifications.push({
+
+                        id:
+                            "recipient-completed-" +
+                            request.id,
+
+                        title:
+                            "Donation Completed",
+
+                        message:
+                            "Your requested " +
+                            request.foodName +
+                            " has been marked as completed.",
+
+                        icon:
+                            "❤️"
+
+                    });
+
+                }
+
+            }
+        );
+
+    }
+
+
+    // ------------------------------------------
+    // SHOW ONLY NEW NOTIFICATIONS
+    // ------------------------------------------
+
+    if (
+        myNotifications.length ===
+        0
+    ) {
+
+        return;
+
+    }
+
+
+    let shownNotifications =
+        JSON.parse(
+            localStorage.getItem(
+                "smartfood_shownNotifications"
+            )
+        ) || [];
+
+
+    const newNotification =
+        myNotifications.find(
+            function(notification) {
+
+                return !shownNotifications.includes(
+                    notification.id
+                );
+
+            }
+        );
+
+
+    if (!newNotification) {
+
+        return;
+
+    }
+
+
+    shownNotifications.push(
+        newNotification.id
+    );
+
+
+    // Keep only latest 100 notification IDs
+
+    if (
+        shownNotifications.length >
+        100
+    ) {
+
+        shownNotifications =
+            shownNotifications.slice(
+                -100
+            );
+
+    }
+
+
+    localStorage.setItem(
+        "smartfood_shownNotifications",
+        JSON.stringify(
+            shownNotifications
+        )
+    );
+
+
+    showNotificationPopup(
+        newNotification.title,
+        newNotification.message,
+        newNotification.icon
+    );
+
+}
+
+
+// ==========================================
+// START NOTIFICATION CHECKING
+// ==========================================
+
+function startNotificationChecking() {
+
+    checkNotifications();
+
+
+    setInterval(
+        function() {
+
+            checkNotifications();
+
+        },
+        5000
+    );
+
+}
+
+
+// ==========================================
 // DEFAULT ADMIN ACCOUNT
 // ==========================================
 
@@ -208,39 +647,52 @@ function createDefaultAdmin() {
 
     let users =
         JSON.parse(
-            localStorage.getItem("smartfood_users")
+            localStorage.getItem(
+                "smartfood_users"
+            )
         ) || [];
 
 
     const adminExists =
-        users.some(function(user) {
+        users.some(
+            function(user) {
 
-            return (
-                user.email === "admin@smartfood.com" &&
-                user.role === "admin"
-            );
+                return (
+                    user.email ===
+                    "admin@smartfood.com" &&
+                    user.role ===
+                    "admin"
+                );
 
-        });
+            }
+        );
 
 
     if (!adminExists) {
 
         const adminUser = {
 
-            id: "admin001",
+            id:
+                "admin001",
 
-            name: "SmartFood Admin",
+            name:
+                "SmartFood Admin",
 
-            email: "admin@smartfood.com",
+            email:
+                "admin@smartfood.com",
 
-            password: "admin123",
+            password:
+                "admin123",
 
-            role: "admin"
+            role:
+                "admin"
 
         };
 
 
-        users.push(adminUser);
+        users.push(
+            adminUser
+        );
 
 
         localStorage.setItem(
@@ -260,16 +712,27 @@ function createDefaultAdmin() {
 function registerUser() {
 
     const name =
-        document.getElementById("name").value.trim();
+        document.getElementById(
+            "name"
+        ).value.trim();
+
 
     const email =
-        document.getElementById("email").value.trim();
+        document.getElementById(
+            "email"
+        ).value.trim();
+
 
     const password =
-        document.getElementById("password").value;
+        document.getElementById(
+            "password"
+        ).value;
+
 
     const role =
-        document.getElementById("role").value;
+        document.getElementById(
+            "role"
+        ).value;
 
 
     if (
@@ -279,7 +742,9 @@ function registerUser() {
         role === ""
     ) {
 
-        alert("Please fill in all fields.");
+        alert(
+            "Please fill in all fields."
+        );
 
         return;
 
@@ -288,14 +753,20 @@ function registerUser() {
 
     let users =
         JSON.parse(
-            localStorage.getItem("smartfood_users")
+            localStorage.getItem(
+                "smartfood_users"
+            )
         ) || [];
 
 
     const existingUser =
         users.find(
-            user =>
-                user.email === email
+            function(user) {
+
+                return user.email ===
+                    email;
+
+            }
         );
 
 
@@ -312,20 +783,27 @@ function registerUser() {
 
     const newUser = {
 
-        id: Date.now(),
+        id:
+            Date.now(),
 
-        name: name,
+        name:
+            name,
 
-        email: email,
+        email:
+            email,
 
-        password: password,
+        password:
+            password,
 
-        role: role
+        role:
+            role
 
     };
 
 
-    users.push(newUser);
+    users.push(
+        newUser
+    );
 
 
     localStorage.setItem(
@@ -352,13 +830,21 @@ function registerUser() {
 function loginUser() {
 
     const role =
-        document.getElementById("role").value;
+        document.getElementById(
+            "role"
+        ).value;
+
 
     const email =
-        document.getElementById("email").value.trim();
+        document.getElementById(
+            "email"
+        ).value.trim();
+
 
     const password =
-        document.getElementById("password").value;
+        document.getElementById(
+            "password"
+        ).value;
 
 
     if (
@@ -378,16 +864,26 @@ function loginUser() {
 
     const users =
         JSON.parse(
-            localStorage.getItem("smartfood_users")
+            localStorage.getItem(
+                "smartfood_users"
+            )
         ) || [];
 
 
     const user =
         users.find(
-            user =>
-                user.email === email &&
-                user.password === password &&
-                user.role === role
+            function(user) {
+
+                return (
+                    user.email ===
+                    email &&
+                    user.password ===
+                    password &&
+                    user.role ===
+                    role
+                );
+
+            }
         );
 
 
@@ -408,26 +904,43 @@ function loginUser() {
     );
 
 
+    // Clear old notification history
+    // for this browser when logging in
+
+    localStorage.removeItem(
+        "smartfood_shownNotifications"
+    );
+
+
     alert(
         "Login successful!"
     );
 
 
-    if (role === "provider") {
+    if (
+        role ===
+        "provider"
+    ) {
 
         window.location.href =
             "provider-dashboard.html";
 
     }
 
-    else if (role === "recipient") {
+    else if (
+        role ===
+        "recipient"
+    ) {
 
         window.location.href =
             "recipient-dashboard.html";
 
     }
 
-    else if (role === "admin") {
+    else if (
+        role ===
+        "admin"
+    ) {
 
         window.location.href =
             "admin-dashboard.html";
@@ -444,30 +957,53 @@ function loginUser() {
 async function addFood() {
 
     const foodName =
-        document.getElementById("food-name").value.trim();
+        document.getElementById(
+            "food-name"
+        ).value.trim();
+
 
     const foodType =
-        document.getElementById("food-type").value;
+        document.getElementById(
+            "food-type"
+        ).value;
+
 
     const quantity =
         Number(
-            document.getElementById("quantity").value
+            document.getElementById(
+                "quantity"
+            ).value
         );
 
+
     const availableFrom =
-        document.getElementById("available-from").value;
+        document.getElementById(
+            "available-from"
+        ).value;
+
 
     const availableUntil =
-        document.getElementById("available-until").value;
+        document.getElementById(
+            "available-until"
+        ).value;
+
 
     const location =
-        document.getElementById("food-location").value.trim();
+        document.getElementById(
+            "food-location"
+        ).value.trim();
+
 
     const recipientType =
-        document.getElementById("recipient-type").value;
+        document.getElementById(
+            "recipient-type"
+        ).value;
+
 
     const description =
-        document.getElementById("description").value.trim();
+        document.getElementById(
+            "description"
+        ).value.trim();
 
 
     if (
@@ -512,7 +1048,8 @@ async function addFood() {
 
     const newFood = {
 
-        id: Date.now(),
+        id:
+            Date.now(),
 
         providerId:
             currentUser.id,
@@ -553,7 +1090,8 @@ async function addFood() {
     try {
 
         await saveFirebaseData(
-            "foods/" + newFood.id,
+            "foods/" +
+            newFood.id,
             newFood
         );
 
@@ -570,7 +1108,9 @@ async function addFood() {
 
     catch (error) {
 
-        console.error(error);
+        console.error(
+            error
+        );
 
         alert(
             "Unable to publish food. Please try again."
@@ -582,7 +1122,7 @@ async function addFood() {
 
 
 // ==========================================
-// GET ALL FOOD FROM FIREBASE
+// GET ALL FOOD
 // ==========================================
 
 async function getFoods() {
@@ -600,7 +1140,9 @@ async function getFoods() {
     }
 
 
-    return Object.values(data);
+    return Object.values(
+        data
+    );
 
 }
 
@@ -644,21 +1186,28 @@ async function loadProviderFoods() {
 
 
     const myFoods =
-        foods.filter(function(food) {
+        foods.filter(
+            function(food) {
 
-            return (
-                String(food.providerId) ===
-                String(currentUser.id)
-            );
+                return String(
+                    food.providerId
+                ) ===
+                String(
+                    currentUser.id
+                );
 
-        });
+            }
+        );
 
 
-    if (myFoods.length === 0) {
+    if (
+        myFoods.length ===
+        0
+    ) {
 
         foodList.innerHTML = `
 
-            <p style="padding: 20px;">
+            <p style="padding:20px;">
                 No surplus food listings yet.
             </p>
 
@@ -672,55 +1221,62 @@ async function loadProviderFoods() {
     foodList.innerHTML = "";
 
 
-    myFoods.forEach(function(food) {
+    myFoods.forEach(
+        function(food) {
 
-        const foodItem =
-            document.createElement("div");
-
-
-        foodItem.className =
-            "dashboard-food-item";
-
-
-        foodItem.innerHTML = `
-
-            <div class="dashboard-food-icon">
-                🍱
-            </div>
-
-            <div class="food-info">
-
-                <h3>
-                    ${food.foodName}
-                </h3>
-
-                <p>
-                    ${food.quantity} Meals ·
-                    Available until ${food.availableUntil}
-                </p>
-
-                <span class="status available-status">
-                    ${food.status}
-                </span>
-
-            </div>
-
-            <div class="food-action">
-
-                <button
-                    onclick="viewFood('${food.id}')"
-                >
-                    View
-                </button>
-
-            </div>
-
-        `;
+            const foodItem =
+                document.createElement(
+                    "div"
+                );
 
 
-        foodList.appendChild(foodItem);
+            foodItem.className =
+                "dashboard-food-item";
 
-    });
+
+            foodItem.innerHTML = `
+
+                <div class="dashboard-food-icon">
+                    🍱
+                </div>
+
+                <div class="food-info">
+
+                    <h3>
+                        ${food.foodName}
+                    </h3>
+
+                    <p>
+                        ${food.quantity}
+                        Meals · Available until
+                        ${food.availableUntil}
+                    </p>
+
+                    <span class="status available-status">
+                        ${food.status}
+                    </span>
+
+                </div>
+
+                <div class="food-action">
+
+                    <button
+                        onclick="viewFood('${food.id}')"
+                    >
+                        View
+                    </button>
+
+                </div>
+
+            `;
+
+
+            foodList.appendChild(
+                foodItem
+            );
+
+        }
+    );
 
 }
 
@@ -729,7 +1285,9 @@ async function loadProviderFoods() {
 // VIEW FOOD
 // ==========================================
 
-function viewFood(foodId) {
+function viewFood(
+    foodId
+) {
 
     localStorage.setItem(
         "selectedFoodId",
@@ -774,10 +1332,12 @@ async function loadAvailableFoods() {
 
 
 // ==========================================
-// DISPLAY FOOD LISTINGS
+// DISPLAY AVAILABLE FOOD
 // ==========================================
 
-function displayAvailableFoods(foods) {
+function displayAvailableFoods(
+    foods
+) {
 
     const foodList =
         document.getElementById(
@@ -793,22 +1353,28 @@ function displayAvailableFoods(foods) {
 
 
     const availableFoods =
-        foods.filter(function(food) {
+        foods.filter(
+            function(food) {
 
-            return food.status === "available";
+                return food.status ===
+                    "available";
 
-        });
+            }
+        );
 
 
-    if (availableFoods.length === 0) {
+    if (
+        availableFoods.length ===
+        0
+    ) {
 
         foodList.innerHTML = `
 
             <div
                 style="
-                    padding: 30px;
-                    text-align: center;
-                    width: 100%;
+                    padding:30px;
+                    text-align:center;
+                    width:100%;
                 "
             >
 
@@ -833,94 +1399,92 @@ function displayAvailableFoods(foods) {
     foodList.innerHTML = "";
 
 
-    availableFoods.forEach(function(food) {
+    availableFoods.forEach(
+        function(food) {
 
-        const foodCard =
-            document.createElement("div");
-
-
-        foodCard.className =
-            "market-food-card";
-
-
-        foodCard.innerHTML = `
-
-            <div class="market-food-top">
-
-                <div class="market-food-icon">
-                    🍱
-                </div>
-
-                <span class="match-badge">
-                    Smart Match
-                </span>
-
-            </div>
+            const foodCard =
+                document.createElement(
+                    "div"
+                );
 
 
-            <h3>
-                ${food.foodName}
-            </h3>
+            foodCard.className =
+                "market-food-card";
 
 
-            <p class="provider-name">
-                ${food.providerName}
-            </p>
+            foodCard.innerHTML = `
 
+                <div class="market-food-top">
 
-            <div class="market-food-details">
+                    <div class="market-food-icon">
+                        🍱
+                    </div>
 
-                <div>
-
-                    <small>
-                        Quantity
-                    </small>
-
-                    <strong>
-                        ${food.quantity} Meals
-                    </strong>
+                    <span class="match-badge">
+                        Smart Match
+                    </span>
 
                 </div>
 
+                <h3>
+                    ${food.foodName}
+                </h3>
 
-                <div>
+                <p class="provider-name">
+                    ${food.providerName}
+                </p>
 
-                    <small>
-                        Available Until
-                    </small>
+                <div class="market-food-details">
 
-                    <strong>
-                        ${food.availableUntil}
-                    </strong>
+                    <div>
+
+                        <small>
+                            Quantity
+                        </small>
+
+                        <strong>
+                            ${food.quantity} Meals
+                        </strong>
+
+                    </div>
+
+                    <div>
+
+                        <small>
+                            Available Until
+                        </small>
+
+                        <strong>
+                            ${food.availableUntil}
+                        </strong>
+
+                    </div>
 
                 </div>
 
-            </div>
+                <div class="market-location">
+
+                    📍 ${food.location}
+
+                </div>
+
+                <a
+                    href="food-details.html"
+                    class="market-view-btn"
+                    onclick="selectFood('${food.id}')"
+                >
+                    View Details →
+                </a>
+
+            `;
 
 
-            <div class="market-location">
+            foodList.appendChild(
+                foodCard
+            );
 
-                📍 ${food.location}
-
-            </div>
-
-
-            <a
-                href="food-details.html"
-                class="market-view-btn"
-                onclick="selectFood('${food.id}')"
-            >
-                View Details →
-            </a>
-
-        `;
-
-
-        foodList.appendChild(
-            foodCard
-        );
-
-    });
+        }
+    );
 
 }
 
@@ -929,7 +1493,9 @@ function displayAvailableFoods(foods) {
 // SELECT FOOD
 // ==========================================
 
-function selectFood(foodId) {
+function selectFood(
+    foodId
+) {
 
     localStorage.setItem(
         "selectedFoodId",
@@ -950,10 +1516,12 @@ async function filterFoods() {
             "foodSearch"
         );
 
+
     const typeFilter =
         document.getElementById(
             "foodTypeFilter"
         );
+
 
     const locationFilter =
         document.getElementById(
@@ -991,36 +1559,45 @@ async function filterFoods() {
 
 
     const filteredFoods =
-        foods.filter(function(food) {
+        foods.filter(
+            function(food) {
 
-            const matchesSearch =
-                food.foodName
-                    .toLowerCase()
-                    .includes(search);
-
-
-            const matchesType =
-                selectedType === "all" ||
-                food.foodType === selectedType;
+                const matchesSearch =
+                    food.foodName
+                        .toLowerCase()
+                        .includes(
+                            search
+                        );
 
 
-            const matchesLocation =
-                selectedLocation === "all" ||
-                food.location
-                    .toLowerCase()
-                    .includes(
-                        selectedLocation.toLowerCase()
-                    );
+                const matchesType =
+                    selectedType ===
+                    "all" ||
+                    food.foodType ===
+                    selectedType;
 
 
-            return (
-                food.status === "available" &&
-                matchesSearch &&
-                matchesType &&
-                matchesLocation
-            );
+                const matchesLocation =
+                    selectedLocation ===
+                    "all" ||
+                    food.location
+                        .toLowerCase()
+                        .includes(
+                            selectedLocation
+                                .toLowerCase()
+                        );
 
-        });
+
+                return (
+                    food.status ===
+                    "available" &&
+                    matchesSearch &&
+                    matchesType &&
+                    matchesLocation
+                );
+
+            }
+        );
 
 
     displayAvailableFoods(
@@ -1060,12 +1637,18 @@ async function loadFoodDetails() {
 
 
     const food =
-        foods.find(function(item) {
+        foods.find(
+            function(item) {
 
-            return String(item.id) ===
-                String(selectedFoodId);
+                return String(
+                    item.id
+                ) ===
+                String(
+                    selectedFoodId
+                );
 
-        });
+            }
+        );
 
 
     if (!food) {
@@ -1183,12 +1766,18 @@ async function requestFood() {
 
 
     const food =
-        foods.find(function(item) {
+        foods.find(
+            function(item) {
 
-            return String(item.id) ===
-                String(selectedFoodId);
+                return String(
+                    item.id
+                ) ===
+                String(
+                    selectedFoodId
+                );
 
-        });
+            }
+        );
 
 
     if (!food) {
@@ -1252,7 +1841,10 @@ async function requestFood() {
         ).value.trim();
 
 
-    if (quantity <= 0) {
+    if (
+        quantity <=
+        0
+    ) {
 
         alert(
             "Please enter a valid quantity."
@@ -1263,7 +1855,10 @@ async function requestFood() {
     }
 
 
-    if (quantity > food.quantity) {
+    if (
+        quantity >
+        food.quantity
+    ) {
 
         alert(
             "Requested quantity cannot be greater than the available quantity."
@@ -1276,7 +1871,8 @@ async function requestFood() {
 
     const newRequest = {
 
-        id: Date.now(),
+        id:
+            Date.now(),
 
         foodId:
             food.id,
@@ -1303,7 +1899,10 @@ async function requestFood() {
             message,
 
         status:
-            "pending"
+            "pending",
+
+        createdAt:
+            Date.now()
 
     };
 
@@ -1329,7 +1928,9 @@ async function requestFood() {
 
     catch (error) {
 
-        console.error(error);
+        console.error(
+            error
+        );
 
         alert(
             "Unable to send request. Please try again."
@@ -1341,7 +1942,7 @@ async function requestFood() {
 
 
 // ==========================================
-// GET ALL REQUESTS FROM FIREBASE
+// GET ALL REQUESTS
 // ==========================================
 
 async function getRequests() {
@@ -1359,7 +1960,9 @@ async function getRequests() {
     }
 
 
-    return Object.values(data);
+    return Object.values(
+        data
+    );
 
 }
 
@@ -1416,12 +2019,14 @@ async function loadRecipientDashboard() {
 
 
     const availableFoods =
-        foods.filter(function(food) {
+        foods.filter(
+            function(food) {
 
-            return food.status ===
-                "available";
+                return food.status ===
+                    "available";
 
-        });
+            }
+        );
 
 
     document.getElementById(
@@ -1436,11 +2041,14 @@ async function loadRecipientDashboard() {
         );
 
 
-    if (availableFoods.length === 0) {
+    if (
+        availableFoods.length ===
+        0
+    ) {
 
         foodList.innerHTML = `
 
-            <p style="padding: 20px;">
+            <p style="padding:20px;">
                 No surplus food is currently available.
             </p>
 
@@ -1450,64 +2058,73 @@ async function loadRecipientDashboard() {
 
     else {
 
-        foodList.innerHTML = "";
+        foodList.innerHTML =
+            "";
 
 
         availableFoods
-            .slice(0, 3)
-            .forEach(function(food) {
+            .slice(
+                0,
+                3
+            )
+            .forEach(
+                function(food) {
 
-                const foodItem =
-                    document.createElement("div");
-
-
-                foodItem.className =
-                    "dashboard-food-item";
-
-
-                foodItem.innerHTML = `
-
-                    <div class="dashboard-food-icon">
-                        🍱
-                    </div>
-
-                    <div class="food-info">
-
-                        <h3>
-                            ${food.foodName}
-                        </h3>
-
-                        <p>
-                            ${food.quantity} Meals ·
-                            ${food.location}
-                        </p>
-
-                        <span class="status available-status">
-                            Available
-                        </span>
-
-                    </div>
-
-                    <div class="food-action">
-
-                        <a
-                            href="food-details.html"
-                            class="food-view-link"
-                            onclick="selectFood('${food.id}')"
-                        >
-                            View
-                        </a>
-
-                    </div>
-
-                `;
+                    const foodItem =
+                        document.createElement(
+                            "div"
+                        );
 
 
-                foodList.appendChild(
-                    foodItem
-                );
+                    foodItem.className =
+                        "dashboard-food-item";
 
-            });
+
+                    foodItem.innerHTML = `
+
+                        <div class="dashboard-food-icon">
+                            🍱
+                        </div>
+
+                        <div class="food-info">
+
+                            <h3>
+                                ${food.foodName}
+                            </h3>
+
+                            <p>
+                                ${food.quantity}
+                                Meals ·
+                                ${food.location}
+                            </p>
+
+                            <span class="status available-status">
+                                Available
+                            </span>
+
+                        </div>
+
+                        <div class="food-action">
+
+                            <a
+                                href="food-details.html"
+                                class="food-view-link"
+                                onclick="selectFood('${food.id}')"
+                            >
+                                View
+                            </a>
+
+                        </div>
+
+                    `;
+
+
+                    foodList.appendChild(
+                        foodItem
+                    );
+
+                }
+            );
 
     }
 
@@ -1517,12 +2134,18 @@ async function loadRecipientDashboard() {
 
 
     const myRequests =
-        allRequests.filter(function(request) {
+        allRequests.filter(
+            function(request) {
 
-            return String(request.recipientId) ===
-                String(currentUser.id);
+                return String(
+                    request.recipientId
+                ) ===
+                String(
+                    currentUser.id
+                );
 
-        });
+            }
+        );
 
 
     const mealsRequested =
@@ -1530,7 +2153,9 @@ async function loadRecipientDashboard() {
             function(total, request) {
 
                 return total +
-                    Number(request.quantity);
+                    Number(
+                        request.quantity
+                    );
 
             },
             0
@@ -1550,18 +2175,20 @@ async function loadRecipientDashboard() {
 
 
     const activeRequests =
-        myRequests.filter(function(request) {
+        myRequests.filter(
+            function(request) {
 
-            return (
-                request.status ===
-                "pending" ||
-                request.status ===
-                "accepted" ||
-                request.status ===
-                "ready"
-            );
+                return (
+                    request.status ===
+                    "pending" ||
+                    request.status ===
+                    "accepted" ||
+                    request.status ===
+                    "ready"
+                );
 
-        });
+            }
+        );
 
 
     document.getElementById(
@@ -1585,16 +2212,18 @@ async function loadRecipientDashboard() {
 
     const mealsReceived =
         myRequests
-            .filter(function(request) {
+            .filter(
+                function(request) {
 
-                return (
-                    request.status ===
-                    "completed" ||
-                    request.status ===
-                    "received"
-                );
+                    return (
+                        request.status ===
+                        "completed" ||
+                        request.status ===
+                        "received"
+                    );
 
-            })
+                }
+            )
             .reduce(
                 function(total, request) {
 
@@ -1632,11 +2261,14 @@ async function loadRecipientDashboard() {
         );
 
 
-    if (myRequests.length === 0) {
+    if (
+        myRequests.length ===
+        0
+    ) {
 
         requestList.innerHTML = `
 
-            <p style="padding: 20px;">
+            <p style="padding:20px;">
                 You have not requested any food yet.
             </p>
 
@@ -1646,141 +2278,152 @@ async function loadRecipientDashboard() {
 
     else {
 
-        requestList.innerHTML = "";
+        requestList.innerHTML =
+            "";
 
 
-        myRequests.forEach(function(request) {
+        myRequests.forEach(
+            function(request) {
 
-            const requestItem =
-                document.createElement("div");
-
-
-            requestItem.className =
-                "request-item";
-
-
-            let statusClass =
-                "pending-status";
+                const requestItem =
+                    document.createElement(
+                        "div"
+                    );
 
 
-            if (
-                request.status === "accepted" ||
-                request.status === "ready" ||
-                request.status === "completed" ||
-                request.status === "received"
-            ) {
+                requestItem.className =
+                    "request-item";
 
-                statusClass =
-                    "available-status";
+
+                let statusClass =
+                    "pending-status";
+
+
+                if (
+                    request.status ===
+                    "accepted" ||
+                    request.status ===
+                    "ready" ||
+                    request.status ===
+                    "completed" ||
+                    request.status ===
+                    "received"
+                ) {
+
+                    statusClass =
+                        "available-status";
+
+                }
+
+
+                let statusText =
+                    request.status;
+
+
+                if (
+                    request.status ===
+                    "pending"
+                ) {
+
+                    statusText =
+                        "Pending";
+
+                }
+
+                else if (
+                    request.status ===
+                    "accepted"
+                ) {
+
+                    statusText =
+                        "Accepted";
+
+                }
+
+                else if (
+                    request.status ===
+                    "ready"
+                ) {
+
+                    statusText =
+                        "Ready";
+
+                }
+
+                else if (
+                    request.status ===
+                    "completed"
+                ) {
+
+                    statusText =
+                        "Completed";
+
+                }
+
+                else if (
+                    request.status ===
+                    "received"
+                ) {
+
+                    statusText =
+                        "Received";
+
+                }
+
+
+                requestItem.innerHTML = `
+
+                    <div class="recipient-avatar">
+                        🍱
+                    </div>
+
+                    <div class="request-info">
+
+                        <h3>
+                            ${request.foodName}
+                        </h3>
+
+                        <p>
+                            Requested
+                            ${request.quantity}
+                            meals
+                        </p>
+
+                        <small>
+                            Provider:
+                            ${request.providerName}
+                        </small>
+
+                    </div>
+
+                    <span
+                        class="status ${statusClass}"
+                    >
+                        ${statusText}
+                    </span>
+
+                `;
+
+
+                requestList.appendChild(
+                    requestItem
+                );
 
             }
-
-
-            let statusText =
-                request.status;
-
-
-            if (
-                request.status ===
-                "pending"
-            ) {
-
-                statusText =
-                    "Pending";
-
-            }
-
-            else if (
-                request.status ===
-                "accepted"
-            ) {
-
-                statusText =
-                    "Accepted";
-
-            }
-
-            else if (
-                request.status ===
-                "ready"
-            ) {
-
-                statusText =
-                    "Ready";
-
-            }
-
-            else if (
-                request.status ===
-                "completed"
-            ) {
-
-                statusText =
-                    "Completed";
-
-            }
-
-            else if (
-                request.status ===
-                "received"
-            ) {
-
-                statusText =
-                    "Received";
-
-            }
-
-
-            requestItem.innerHTML = `
-
-                <div class="recipient-avatar">
-                    🍱
-                </div>
-
-                <div class="request-info">
-
-                    <h3>
-                        ${request.foodName}
-                    </h3>
-
-                    <p>
-                        Requested
-                        ${request.quantity}
-                        meals
-                    </p>
-
-                    <small>
-                        Provider:
-                        ${request.providerName}
-                    </small>
-
-                </div>
-
-                <span
-                    class="status ${statusClass}"
-                >
-                    ${statusText}
-                </span>
-
-            `;
-
-
-            requestList.appendChild(
-                requestItem
-            );
-
-        });
+        );
 
     }
 
 
     const providerIds =
         new Set(
-            myRequests.map(function(request) {
+            myRequests.map(
+                function(request) {
 
-                return request.providerId;
+                    return request.providerId;
 
-            })
+                }
+            )
         );
 
 
@@ -1854,12 +2497,18 @@ async function loadProviderDashboard() {
 
 
     const myFoods =
-        foods.filter(function(food) {
+        foods.filter(
+            function(food) {
 
-            return String(food.providerId) ===
-                String(currentUser.id);
+                return String(
+                    food.providerId
+                ) ===
+                String(
+                    currentUser.id
+                );
 
-        });
+            }
+        );
 
 
     const foodList =
@@ -1868,11 +2517,14 @@ async function loadProviderDashboard() {
         );
 
 
-    if (myFoods.length === 0) {
+    if (
+        myFoods.length ===
+        0
+    ) {
 
         foodList.innerHTML = `
 
-            <p style="padding: 20px;">
+            <p style="padding:20px;">
                 You have not added any surplus food yet.
             </p>
 
@@ -1882,102 +2534,107 @@ async function loadProviderDashboard() {
 
     else {
 
-        foodList.innerHTML = "";
+        foodList.innerHTML =
+            "";
 
 
-        myFoods.forEach(function(food) {
+        myFoods.forEach(
+            function(food) {
 
-            const foodItem =
-                document.createElement("div");
-
-
-            foodItem.className =
-                "dashboard-food-item";
-
-
-            let statusClass =
-                "available-status";
+                const foodItem =
+                    document.createElement(
+                        "div"
+                    );
 
 
-            if (
-                food.status !==
-                "available"
-            ) {
+                foodItem.className =
+                    "dashboard-food-item";
 
-                statusClass =
-                    "pending-status";
+
+                let statusClass =
+                    "available-status";
+
+
+                if (
+                    food.status !==
+                    "available"
+                ) {
+
+                    statusClass =
+                        "pending-status";
+
+                }
+
+
+                let statusText =
+                    food.status;
+
+
+                if (
+                    food.status ===
+                    "available"
+                ) {
+
+                    statusText =
+                        "Available";
+
+                }
+
+                else if (
+                    food.status ===
+                    "completed"
+                ) {
+
+                    statusText =
+                        "Completed";
+
+                }
+
+
+                foodItem.innerHTML = `
+
+                    <div class="dashboard-food-icon">
+                        🍱
+                    </div>
+
+                    <div class="food-info">
+
+                        <h3>
+                            ${food.foodName}
+                        </h3>
+
+                        <p>
+                            ${food.quantity}
+                            Meals ·
+                            Available until
+                            ${food.availableUntil}
+                        </p>
+
+                        <span class="status ${statusClass}">
+                            ${statusText}
+                        </span>
+
+                    </div>
+
+                    <div class="food-action">
+
+                        <button
+                            onclick="viewFood('${food.id}')"
+                        >
+                            View
+                        </button>
+
+                    </div>
+
+                `;
+
+
+                foodList.appendChild(
+                    foodItem
+                );
 
             }
-
-
-            let statusText =
-                food.status;
-
-
-            if (
-                food.status ===
-                "available"
-            ) {
-
-                statusText =
-                    "Available";
-
-            }
-
-            else if (
-                food.status ===
-                "completed"
-            ) {
-
-                statusText =
-                    "Completed";
-
-            }
-
-
-            foodItem.innerHTML = `
-
-                <div class="dashboard-food-icon">
-                    🍱
-                </div>
-
-                <div class="food-info">
-
-                    <h3>
-                        ${food.foodName}
-                    </h3>
-
-                    <p>
-                        ${food.quantity}
-                        Meals ·
-                        Available until
-                        ${food.availableUntil}
-                    </p>
-
-                    <span class="status ${statusClass}">
-                        ${statusText}
-                    </span>
-
-                </div>
-
-                <div class="food-action">
-
-                    <button
-                        onclick="viewFood('${food.id}')"
-                    >
-                        View
-                    </button>
-
-                </div>
-
-            `;
-
-
-            foodList.appendChild(
-                foodItem
-            );
-
-        });
+        );
 
     }
 
@@ -1987,21 +2644,29 @@ async function loadProviderDashboard() {
 
 
     const providerRequests =
-        allRequests.filter(function(request) {
+        allRequests.filter(
+            function(request) {
 
-            return String(request.providerId) ===
-                String(currentUser.id);
+                return String(
+                    request.providerId
+                ) ===
+                String(
+                    currentUser.id
+                );
 
-        });
+            }
+        );
 
 
     const pendingRequests =
-        providerRequests.filter(function(request) {
+        providerRequests.filter(
+            function(request) {
 
-            return request.status ===
-                "pending";
+                return request.status ===
+                    "pending";
 
-        });
+            }
+        );
 
 
     document.getElementById(
@@ -2011,11 +2676,14 @@ async function loadProviderDashboard() {
         " New";
 
 
-    if (providerRequests.length === 0) {
+    if (
+        providerRequests.length ===
+        0
+    ) {
 
         requestList.innerHTML = `
 
-            <p style="padding: 20px;">
+            <p style="padding:20px;">
                 No donation requests yet.
             </p>
 
@@ -2025,223 +2693,235 @@ async function loadProviderDashboard() {
 
     else {
 
-        requestList.innerHTML = "";
+        requestList.innerHTML =
+            "";
 
 
-        providerRequests.forEach(function(request) {
+        providerRequests.forEach(
+            function(request) {
 
-            const requestItem =
-                document.createElement("div");
-
-
-            requestItem.className =
-                "request-item";
-
-
-            let statusClass =
-                "pending-status";
+                const requestItem =
+                    document.createElement(
+                        "div"
+                    );
 
 
-            if (
-                request.status === "accepted" ||
-                request.status === "ready" ||
-                request.status === "completed" ||
-                request.status === "received"
-            ) {
-
-                statusClass =
-                    "available-status";
-
-            }
+                requestItem.className =
+                    "request-item";
 
 
-            let statusText =
-                request.status;
+                let statusClass =
+                    "pending-status";
 
 
-            if (
-                request.status ===
-                "pending"
-            ) {
+                if (
+                    request.status ===
+                    "accepted" ||
+                    request.status ===
+                    "ready" ||
+                    request.status ===
+                    "completed" ||
+                    request.status ===
+                    "received"
+                ) {
 
-                statusText =
-                    "Pending";
+                    statusClass =
+                        "available-status";
 
-            }
-
-            else if (
-                request.status ===
-                "accepted"
-            ) {
-
-                statusText =
-                    "Accepted";
-
-            }
-
-            else if (
-                request.status ===
-                "rejected"
-            ) {
-
-                statusText =
-                    "Rejected";
-
-            }
-
-            else if (
-                request.status ===
-                "ready"
-            ) {
-
-                statusText =
-                    "Ready";
-
-            }
-
-            else if (
-                request.status ===
-                "completed"
-            ) {
-
-                statusText =
-                    "Completed";
-
-            }
-
-            else if (
-                request.status ===
-                "received"
-            ) {
-
-                statusText =
-                    "Received";
-
-            }
+                }
 
 
-            let buttons = "";
+                let statusText =
+                    request.status;
 
 
-            if (
-                request.status ===
-                "pending"
-            ) {
+                if (
+                    request.status ===
+                    "pending"
+                ) {
 
-                buttons = `
+                    statusText =
+                        "Pending";
 
-                    <div class="request-buttons">
+                }
 
-                        <button
-                            class="accept-btn"
-                            onclick="acceptRequest('${request.id}')"
-                        >
-                            Accept
-                        </button>
+                else if (
+                    request.status ===
+                    "accepted"
+                ) {
 
-                        <button
-                            class="reject-btn"
-                            onclick="rejectRequest('${request.id}')"
-                        >
-                            Reject
-                        </button>
+                    statusText =
+                        "Accepted";
+
+                }
+
+                else if (
+                    request.status ===
+                    "rejected"
+                ) {
+
+                    statusText =
+                        "Rejected";
+
+                }
+
+                else if (
+                    request.status ===
+                    "ready"
+                ) {
+
+                    statusText =
+                        "Ready";
+
+                }
+
+                else if (
+                    request.status ===
+                    "completed"
+                ) {
+
+                    statusText =
+                        "Completed";
+
+                }
+
+                else if (
+                    request.status ===
+                    "received"
+                ) {
+
+                    statusText =
+                        "Received";
+
+                }
+
+
+                let buttons =
+                    "";
+
+
+                if (
+                    request.status ===
+                    "pending"
+                ) {
+
+                    buttons = `
+
+                        <div class="request-buttons">
+
+                            <button
+                                class="accept-btn"
+                                onclick="acceptRequest('${request.id}')"
+                            >
+                                Accept
+                            </button>
+
+                            <button
+                                class="reject-btn"
+                                onclick="rejectRequest('${request.id}')"
+                            >
+                                Reject
+                            </button>
+
+                        </div>
+
+                    `;
+
+                }
+
+
+                else if (
+                    request.status ===
+                    "accepted"
+                ) {
+
+                    buttons = `
+
+                        <div class="request-buttons">
+
+                            <button
+                                class="accept-btn"
+                                onclick="completeDonation('${request.id}')"
+                            >
+                                Mark Donation Complete
+                            </button>
+
+                        </div>
+
+                    `;
+
+                }
+
+
+                else {
+
+                    buttons = `
+
+                        <span class="status ${statusClass}">
+                            ${statusText}
+                        </span>
+
+                    `;
+
+                }
+
+
+                requestItem.innerHTML = `
+
+                    <div class="recipient-avatar">
+                        🤝
+                    </div>
+
+                    <div class="request-info">
+
+                        <h3>
+                            ${request.recipientName}
+                        </h3>
+
+                        <p>
+                            ${request.foodName}
+                            -
+                            ${request.quantity}
+                            meals
+                        </p>
+
+                        <small>
+                            ${
+                                request.message ||
+                                "No message provided"
+                            }
+                        </small>
 
                     </div>
 
-                `;
-
-            }
-
-
-            else if (
-                request.status ===
-                "accepted"
-            ) {
-
-                buttons = `
-
-                    <div class="request-buttons">
-
-                        <button
-                            class="accept-btn"
-                            onclick="completeDonation('${request.id}')"
-                        >
-                            Mark Donation Complete
-                        </button>
-
-                    </div>
+                    ${buttons}
 
                 `;
 
-            }
 
-
-            else {
-
-                buttons = `
-
-                    <span class="status ${statusClass}">
-                        ${statusText}
-                    </span>
-
-                `;
+                requestList.appendChild(
+                    requestItem
+                );
 
             }
-
-
-            requestItem.innerHTML = `
-
-                <div class="recipient-avatar">
-                    🤝
-                </div>
-
-                <div class="request-info">
-
-                    <h3>
-                        ${request.recipientName}
-                    </h3>
-
-                    <p>
-                        ${request.foodName}
-                        -
-                        ${request.quantity}
-                        meals
-                    </p>
-
-                    <small>
-                        ${
-                            request.message ||
-                            "No message provided"
-                        }
-                    </small>
-
-                </div>
-
-                ${buttons}
-
-            `;
-
-
-            requestList.appendChild(
-                requestItem
-            );
-
-        });
+        );
 
     }
 
 
     const completedRequests =
-        providerRequests.filter(function(request) {
+        providerRequests.filter(
+            function(request) {
 
-            return (
-                request.status ===
-                "completed" ||
-                request.status ===
-                "received"
-            );
+                return (
+                    request.status ===
+                    "completed" ||
+                    request.status ===
+                    "received"
+                );
 
-        });
+            }
+        );
 
 
     const donatedMeals =
@@ -2273,12 +2953,14 @@ async function loadProviderDashboard() {
 
     const surplusMeals =
         myFoods
-            .filter(function(food) {
+            .filter(
+                function(food) {
 
-                return food.status ===
-                    "available";
+                    return food.status ===
+                        "available";
 
-            })
+                }
+            )
             .reduce(
                 function(total, food) {
 
@@ -2305,19 +2987,27 @@ async function loadProviderDashboard() {
 // ACCEPT REQUEST
 // ==========================================
 
-async function acceptRequest(requestId) {
+async function acceptRequest(
+    requestId
+) {
 
     const requests =
         await getRequests();
 
 
     const request =
-        requests.find(function(item) {
+        requests.find(
+            function(item) {
 
-            return String(item.id) ===
-                String(requestId);
+                return String(
+                    item.id
+                ) ===
+                String(
+                    requestId
+                );
 
-        });
+            }
+        );
 
 
     if (!request) {
@@ -2336,12 +3026,18 @@ async function acceptRequest(requestId) {
 
 
     const food =
-        foods.find(function(item) {
+        foods.find(
+            function(item) {
 
-            return String(item.id) ===
-                String(request.foodId);
+                return String(
+                    item.id
+                ) ===
+                String(
+                    request.foodId
+                );
 
-        });
+            }
+        );
 
 
     if (!food) {
@@ -2356,8 +3052,12 @@ async function acceptRequest(requestId) {
 
 
     if (
-        Number(request.quantity) >
-        Number(food.quantity)
+        Number(
+            request.quantity
+        ) >
+        Number(
+            food.quantity
+        )
     ) {
 
         alert(
@@ -2373,6 +3073,10 @@ async function acceptRequest(requestId) {
         "accepted";
 
 
+    request.updatedAt =
+        Date.now();
+
+
     await saveFirebaseData(
         "requests/" +
         request.id,
@@ -2385,7 +3089,7 @@ async function acceptRequest(requestId) {
     );
 
 
-    loadProviderDashboard();
+    await loadProviderDashboard();
 
 }
 
@@ -2394,19 +3098,27 @@ async function acceptRequest(requestId) {
 // REJECT REQUEST
 // ==========================================
 
-async function rejectRequest(requestId) {
+async function rejectRequest(
+    requestId
+) {
 
     const requests =
         await getRequests();
 
 
     const request =
-        requests.find(function(item) {
+        requests.find(
+            function(item) {
 
-            return String(item.id) ===
-                String(requestId);
+                return String(
+                    item.id
+                ) ===
+                String(
+                    requestId
+                );
 
-        });
+            }
+        );
 
 
     if (!request) {
@@ -2424,6 +3136,10 @@ async function rejectRequest(requestId) {
         "rejected";
 
 
+    request.updatedAt =
+        Date.now();
+
+
     await saveFirebaseData(
         "requests/" +
         request.id,
@@ -2436,7 +3152,7 @@ async function rejectRequest(requestId) {
     );
 
 
-    loadProviderDashboard();
+    await loadProviderDashboard();
 
 }
 
@@ -2445,19 +3161,27 @@ async function rejectRequest(requestId) {
 // COMPLETE DONATION
 // ==========================================
 
-async function completeDonation(requestId) {
+async function completeDonation(
+    requestId
+) {
 
     const requests =
         await getRequests();
 
 
     const request =
-        requests.find(function(item) {
+        requests.find(
+            function(item) {
 
-            return String(item.id) ===
-                String(requestId);
+                return String(
+                    item.id
+                ) ===
+                String(
+                    requestId
+                );
 
-        });
+            }
+        );
 
 
     if (!request) {
@@ -2490,12 +3214,18 @@ async function completeDonation(requestId) {
 
 
     const food =
-        foods.find(function(item) {
+        foods.find(
+            function(item) {
 
-            return String(item.id) ===
-                String(request.foodId);
+                return String(
+                    item.id
+                ) ===
+                String(
+                    request.foodId
+                );
 
-        });
+            }
+        );
 
 
     if (!food) {
@@ -2510,8 +3240,12 @@ async function completeDonation(requestId) {
 
 
     if (
-        Number(request.quantity) >
-        Number(food.quantity)
+        Number(
+            request.quantity
+        ) >
+        Number(
+            food.quantity
+        )
     ) {
 
         alert(
@@ -2524,20 +3258,33 @@ async function completeDonation(requestId) {
 
 
     food.quantity =
-        Number(food.quantity) -
-        Number(request.quantity);
+        Number(
+            food.quantity
+        ) -
+        Number(
+            request.quantity
+        );
 
 
     request.donatedQuantity =
-        Number(request.quantity);
+        Number(
+            request.quantity
+        );
 
 
     request.status =
         "completed";
 
 
+    request.updatedAt =
+        Date.now();
+
+
     if (
-        Number(food.quantity) === 0
+        Number(
+            food.quantity
+        ) ===
+        0
     ) {
 
         food.status =
@@ -2565,7 +3312,7 @@ async function completeDonation(requestId) {
     );
 
 
-    loadProviderDashboard();
+    await loadProviderDashboard();
 
 }
 
@@ -2593,6 +3340,12 @@ document.addEventListener(
         await loadRecipientDashboard();
 
         await loadProviderDashboard();
+
+
+        // Start checking Firebase
+        // for new request/status notifications
+
+        startNotificationChecking();
 
     }
 );
