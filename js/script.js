@@ -1,891 +1,214 @@
-// ==========================================
+// ============================================================
 // SMART FOOD WASTE MANAGEMENT SYSTEM
-// JavaScript File
-// Firebase Shared Database Version
-// Notifications Enabled
-// ==========================================
+// Main JavaScript File
+// ============================================================
 
 
-// ==========================================
+// ============================================================
 // FIREBASE CONFIGURATION
-// ==========================================
+// ============================================================
 
 const firebaseConfig = {
-
     apiKey: "AIzaSyBobsVbRVHTwk7msxkCVqSEBW3VF__E__o",
-
-    authDomain:
-        "smart-food-waste-mngmt-2026.firebaseapp.com",
-
-    databaseURL:
-        "https://smart-food-waste-mngmt-2026-default-rtdb.firebaseio.com",
-
-    projectId:
-        "smart-food-waste-mngmt-2026",
-
-    storageBucket:
-        "smart-food-waste-mngmt-2026.firebasestorage.app",
-
-    messagingSenderId:
-        "901436371265",
-
-    appId:
-        "1:901436371265:web:b3860779c7d75e43d5b1c0",
-
-    measurementId:
-        "G-8L4WFDV799"
-
+    authDomain: "smart-food-waste-mngmt-2026.firebaseapp.com",
+    databaseURL: "https://smart-food-waste-mngmt-2026-default-rtdb.firebaseio.com",
+    projectId: "smart-food-waste-mngmt-2026",
+    storageBucket: "smart-food-waste-mngmt-2026.firebasestorage.app",
+    messagingSenderId: "901436371265",
+    appId: "1:901436371265:web:b3860779c7d75e43d5b1c0",
+    measurementId: "G-8L4WFDV799"
 };
 
 
-// ==========================================
+// ============================================================
 // FIREBASE INITIALIZATION
-// ==========================================
+// ============================================================
 
-let firebaseDatabase = null;
+let firebaseApp = null;
+let firebaseDB = null;
 
-const firebaseReady = (async function () {
+async function initializeFirebase() {
+    if (firebaseDB) {
+        return firebaseDB;
+    }
 
     try {
-
-        const firebaseAppModule =
-            await import(
-                "https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js"
-            );
-
-        const firebaseDatabaseModule =
-            await import(
-                "https://www.gstatic.com/firebasejs/12.19.0/firebase-database.js"
-            );
-
-        const app =
-            firebaseAppModule.initializeApp(firebaseConfig);
-
-        firebaseDatabase =
-            firebaseDatabaseModule.getDatabase(app);
-
-        console.log("Firebase connected successfully.");
-
-        return true;
-
-    }
-
-    catch (error) {
-
-        console.error(
-            "Firebase connection failed:",
-            error
+        const { initializeApp } = await import(
+            "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js"
         );
 
-        alert(
-            "Unable to connect to the online database. Please check your internet connection."
+        const { getDatabase, ref, set, push, get, update } = await import(
+            "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js"
         );
 
-        return false;
+        firebaseApp = initializeApp(firebaseConfig);
+        firebaseDB = getDatabase(firebaseApp);
 
+        window.firebaseTools = {
+            ref,
+            set,
+            push,
+            get,
+            update
+        };
+
+        return firebaseDB;
+
+    } catch (error) {
+        console.error("Firebase initialization failed:", error);
+        alert("Unable to connect to Firebase.");
+        return null;
     }
-
-})();
-
-
-// ==========================================
-// FIREBASE HELPER FUNCTIONS
-// ==========================================
-
-async function getFirebaseData(path) {
-
-    const connected =
-        await firebaseReady;
-
-    if (!connected) {
-
-        return {};
-
-    }
-
-    const {
-        ref,
-        get
-    } =
-        await import(
-            "https://www.gstatic.com/firebasejs/12.19.0/firebase-database.js"
-        );
-
-    const databaseReference =
-        ref(
-            firebaseDatabase,
-            path
-        );
-
-    const snapshot =
-        await get(databaseReference);
-
-    if (snapshot.exists()) {
-
-        return snapshot.val();
-
-    }
-
-    return {};
-
 }
 
 
-async function saveFirebaseData(path, data) {
+// ============================================================
+// HELPER - CURRENT USER
+// ============================================================
 
-    const connected =
-        await firebaseReady;
-
-    if (!connected) {
-
-        return false;
-
-    }
-
-    const {
-        ref,
-        set
-    } =
-        await import(
-            "https://www.gstatic.com/firebasejs/12.19.0/firebase-database.js"
-        );
-
-    const databaseReference =
-        ref(
-            firebaseDatabase,
-            path
-        );
-
-    await set(
-        databaseReference,
-        data
+function getCurrentUser() {
+    return JSON.parse(
+        localStorage.getItem("smartfood_currentUser")
     );
-
-    return true;
-
 }
 
 
-async function updateFirebaseData(path, data) {
-
-    const connected =
-        await firebaseReady;
-
-    if (!connected) {
-
-        return false;
-
-    }
-
-    const {
-        ref,
-        update
-    } =
-        await import(
-            "https://www.gstatic.com/firebasejs/12.19.0/firebase-database.js"
-        );
-
-    const databaseReference =
-        ref(
-            firebaseDatabase,
-            path
-        );
-
-    await update(
-        databaseReference,
-        data
-    );
-
-    return true;
-
-}
-
-
-// ==========================================
-// POPUP NOTIFICATION SYSTEM
-// ==========================================
-
-function showNotificationPopup(
-    title,
-    message,
-    icon = "🔔"
-) {
-
-    const existingPopup =
-        document.getElementById(
-            "smartfoodNotificationPopup"
-        );
-
-    if (existingPopup) {
-
-        existingPopup.remove();
-
-    }
-
-
-    const popup =
-        document.createElement("div");
-
-    popup.id =
-        "smartfoodNotificationPopup";
-
-
-    popup.innerHTML = `
-
-        <div class="smartfood-notification-icon">
-            ${icon}
-        </div>
-
-        <div class="smartfood-notification-content">
-
-            <strong>
-                ${title}
-            </strong>
-
-            <p>
-                ${message}
-            </p>
-
-        </div>
-
-        <button
-            class="smartfood-notification-close"
-            onclick="closeNotificationPopup()"
-        >
-            ×
-        </button>
-
-    `;
-
-
-    popup.style.position =
-        "fixed";
-
-    popup.style.top =
-        "25px";
-
-    popup.style.right =
-        "25px";
-
-    popup.style.width =
-        "350px";
-
-    popup.style.maxWidth =
-        "calc(100% - 40px)";
-
-    popup.style.background =
-        "#ffffff";
-
-    popup.style.padding =
-        "18px";
-
-    popup.style.borderRadius =
-        "14px";
-
-    popup.style.boxShadow =
-        "0 10px 35px rgba(0,0,0,0.18)";
-
-    popup.style.display =
-        "flex";
-
-    popup.style.alignItems =
-        "flex-start";
-
-    popup.style.gap =
-        "12px";
-
-    popup.style.zIndex =
-        "99999";
-
-    popup.style.border =
-        "1px solid #e5e7eb";
-
-
-    document.body.appendChild(
-        popup
-    );
-
-
-    setTimeout(
-        function() {
-
-            closeNotificationPopup();
-
-        },
-        6000
-    );
-
-}
-
-
-function closeNotificationPopup() {
-
-    const popup =
-        document.getElementById(
-            "smartfoodNotificationPopup"
-        );
-
-    if (popup) {
-
-        popup.remove();
-
-    }
-
-}
-
-
-// ==========================================
-// CHECK NOTIFICATIONS
-// ==========================================
-
-async function checkNotifications() {
-
-    const currentUser =
-        JSON.parse(
-            localStorage.getItem(
-                "smartfood_currentUser"
-            )
-        );
-
-
-    if (!currentUser) {
-
-        return;
-
-    }
-
-
-    const requests =
-        await getRequests();
-
-
-    const myNotifications = [];
-
-
-    // ------------------------------------------
-    // PROVIDER NOTIFICATIONS
-    // ------------------------------------------
-
-    if (
-        currentUser.role ===
-        "provider"
-    ) {
-
-        const providerRequests =
-            requests.filter(
-                function(request) {
-
-                    return String(
-                        request.providerId
-                    ) ===
-                    String(
-                        currentUser.id
-                    );
-
-                }
-            );
-
-
-        providerRequests.forEach(
-            function(request) {
-
-                if (
-                    request.status ===
-                    "pending"
-                ) {
-
-                    myNotifications.push({
-
-                        id:
-                            "provider-pending-" +
-                            request.id,
-
-                        title:
-                            "New Food Request",
-
-                        message:
-                            request.recipientName +
-                            " requested " +
-                            request.quantity +
-                            " meals of " +
-                            request.foodName +
-                            ".",
-
-                        icon:
-                            "📨"
-
-                    });
-
-                }
-
-            }
-        );
-
-    }
-
-
-    // ------------------------------------------
-    // RECIPIENT NOTIFICATIONS
-    // ------------------------------------------
-
-    if (
-        currentUser.role ===
-        "recipient"
-    ) {
-
-        const recipientRequests =
-            requests.filter(
-                function(request) {
-
-                    return String(
-                        request.recipientId
-                    ) ===
-                    String(
-                        currentUser.id
-                    );
-
-                }
-            );
-
-
-        recipientRequests.forEach(
-            function(request) {
-
-
-                if (
-                    request.status ===
-                    "accepted"
-                ) {
-
-                    myNotifications.push({
-
-                        id:
-                            "recipient-accepted-" +
-                            request.id,
-
-                        title:
-                            "Request Accepted",
-
-                        message:
-                            "Your request for " +
-                            request.quantity +
-                            " meals of " +
-                            request.foodName +
-                            " has been accepted.",
-
-                        icon:
-                            "✅"
-
-                    });
-
-                }
-
-
-                else if (
-                    request.status ===
-                    "rejected"
-                ) {
-
-                    myNotifications.push({
-
-                        id:
-                            "recipient-rejected-" +
-                            request.id,
-
-                        title:
-                            "Request Rejected",
-
-                        message:
-                            "Your request for " +
-                            request.foodName +
-                            " was rejected by the provider.",
-
-                        icon:
-                            "❌"
-
-                    });
-
-                }
-
-
-                else if (
-                    request.status ===
-                    "completed"
-                ) {
-
-                    myNotifications.push({
-
-                        id:
-                            "recipient-completed-" +
-                            request.id,
-
-                        title:
-                            "Donation Completed",
-
-                        message:
-                            "Your requested " +
-                            request.foodName +
-                            " has been marked as completed.",
-
-                        icon:
-                            "❤️"
-
-                    });
-
-                }
-
-            }
-        );
-
-    }
-
-
-    // ------------------------------------------
-    // SHOW ONLY NEW NOTIFICATIONS
-    // ------------------------------------------
-
-    if (
-        myNotifications.length ===
-        0
-    ) {
-
-        return;
-
-    }
-
-
-    let shownNotifications =
-        JSON.parse(
-            localStorage.getItem(
-                "smartfood_shownNotifications"
-            )
-        ) || [];
-
-
-    const newNotification =
-        myNotifications.find(
-            function(notification) {
-
-                return !shownNotifications.includes(
-                    notification.id
-                );
-
-            }
-        );
-
-
-    if (!newNotification) {
-
-        return;
-
-    }
-
-
-    shownNotifications.push(
-        newNotification.id
-    );
-
-
-    // Keep only latest 100 notification IDs
-
-    if (
-        shownNotifications.length >
-        100
-    ) {
-
-        shownNotifications =
-            shownNotifications.slice(
-                -100
-            );
-
-    }
-
-
-    localStorage.setItem(
-        "smartfood_shownNotifications",
-        JSON.stringify(
-            shownNotifications
-        )
-    );
-
-
-    showNotificationPopup(
-        newNotification.title,
-        newNotification.message,
-        newNotification.icon
-    );
-
-}
-
-
-// ==========================================
-// START NOTIFICATION CHECKING
-// ==========================================
-
-function startNotificationChecking() {
-
-    checkNotifications();
-
-
-    setInterval(
-        function() {
-
-            checkNotifications();
-
-        },
-        5000
-    );
-
-}
-
-
-// ==========================================
-// DEFAULT ADMIN ACCOUNT
-// ==========================================
+// ============================================================
+// DEFAULT ADMIN
+// ============================================================
 
 function createDefaultAdmin() {
 
     let users =
-        JSON.parse(
-            localStorage.getItem(
-                "smartfood_users"
-            )
-        ) || [];
+        JSON.parse(localStorage.getItem("smartfood_users")) || [];
 
-
-    const adminExists =
-        users.some(
-            function(user) {
-
-                return (
-                    user.email ===
-                    "admin@smartfood.com" &&
-                    user.role ===
-                    "admin"
-                );
-
-            }
-        );
-
+    const adminExists = users.some(function(user) {
+        return user.role === "admin";
+    });
 
     if (!adminExists) {
 
-        const adminUser = {
-
-            id:
-                "admin001",
-
-            name:
-                "SmartFood Admin",
-
-            email:
-                "admin@smartfood.com",
-
-            password:
-                "admin123",
-
-            role:
-                "admin"
-
+        const admin = {
+            id: 1,
+            name: "System Administrator",
+            email: "admin@smartfood.com",
+            password: "admin123",
+            role: "admin",
+            location: "System"
         };
 
-
-        users.push(
-            adminUser
-        );
-
+        users.push(admin);
 
         localStorage.setItem(
             "smartfood_users",
             JSON.stringify(users)
         );
-
     }
-
 }
 
 
-// ==========================================
-// USER REGISTRATION
-// ==========================================
+// ============================================================
+// REGISTER USER
+// ============================================================
 
 function registerUser() {
 
     const name =
-        document.getElementById(
-            "name"
-        ).value.trim();
-
+        document.getElementById("name").value.trim();
 
     const email =
-        document.getElementById(
-            "email"
-        ).value.trim();
-
+        document.getElementById("email").value.trim();
 
     const password =
-        document.getElementById(
-            "password"
-        ).value;
-
+        document.getElementById("password").value;
 
     const role =
-        document.getElementById(
-            "role"
-        ).value;
+        document.getElementById("role").value;
 
+    const location =
+        document.getElementById("location").value.trim();
 
     if (
         name === "" ||
         email === "" ||
         password === "" ||
-        role === ""
+        role === "" ||
+        location === ""
     ) {
-
-        alert(
-            "Please fill in all fields."
-        );
-
+        alert("Please fill in all fields.");
         return;
-
     }
-
 
     let users =
-        JSON.parse(
-            localStorage.getItem(
-                "smartfood_users"
-            )
-        ) || [];
+        JSON.parse(localStorage.getItem("smartfood_users")) || [];
 
-
-    const existingUser =
-        users.find(
-            function(user) {
-
-                return user.email ===
-                    email;
-
-            }
-        );
-
+    const existingUser = users.find(function(user) {
+        return user.email.toLowerCase() === email.toLowerCase();
+    });
 
     if (existingUser) {
-
-        alert(
-            "An account with this email already exists."
-        );
-
+        alert("An account with this email already exists.");
         return;
-
     }
 
-
     const newUser = {
-
-        id:
-            Date.now(),
-
-        name:
-            name,
-
-        email:
-            email,
-
-        password:
-            password,
-
-        role:
-            role
-
+        id: Date.now(),
+        name: name,
+        email: email,
+        password: password,
+        role: role,
+        location: location
     };
 
-
-    users.push(
-        newUser
-    );
-
+    users.push(newUser);
 
     localStorage.setItem(
         "smartfood_users",
         JSON.stringify(users)
     );
 
+    alert("Registration successful!");
 
-    alert(
-        "Registration successful!"
-    );
-
-
-    window.location.href =
-        "login.html";
-
+    window.location.href = "login.html";
 }
 
 
-// ==========================================
-// USER LOGIN
-// ==========================================
+// ============================================================
+// LOGIN USER
+// ============================================================
 
 function loginUser() {
 
-    const role =
-        document.getElementById(
-            "role"
-        ).value;
-
-
     const email =
-        document.getElementById(
-            "email"
-        ).value.trim();
-
+        document.getElementById("email").value.trim();
 
     const password =
-        document.getElementById(
-            "password"
-        ).value;
+        document.getElementById("password").value;
 
+    const role =
+        document.getElementById("role").value;
 
     if (
-        role === "" ||
         email === "" ||
-        password === ""
+        password === "" ||
+        role === ""
     ) {
-
-        alert(
-            "Please fill in all fields."
-        );
-
+        alert("Please fill in all fields.");
         return;
-
     }
 
+    let users =
+        JSON.parse(localStorage.getItem("smartfood_users")) || [];
 
-    const users =
-        JSON.parse(
-            localStorage.getItem(
-                "smartfood_users"
-            )
-        ) || [];
+    const user = users.find(function(user) {
 
-
-    const user =
-        users.find(
-            function(user) {
-
-                return (
-                    user.email ===
-                    email &&
-                    user.password ===
-                    password &&
-                    user.role ===
-                    role
-                );
-
-            }
+        return (
+            user.email.toLowerCase() === email.toLowerCase() &&
+            user.password === password &&
+            user.role === role
         );
 
+    });
 
     if (!user) {
 
@@ -894,2456 +217,1797 @@ function loginUser() {
         );
 
         return;
-
     }
-
 
     localStorage.setItem(
         "smartfood_currentUser",
         JSON.stringify(user)
     );
 
-
-    // Clear old notification history
-    // for this browser when logging in
-
-    localStorage.removeItem(
-        "smartfood_shownNotifications"
-    );
-
-
-    alert(
-        "Login successful!"
-    );
-
-
-    if (
-        role ===
-        "provider"
-    ) {
+    if (user.role === "provider") {
 
         window.location.href =
             "provider-dashboard.html";
 
-    }
-
-    else if (
-        role ===
-        "recipient"
-    ) {
+    } else if (user.role === "recipient") {
 
         window.location.href =
             "recipient-dashboard.html";
 
-    }
-
-    else if (
-        role ===
-        "admin"
-    ) {
+    } else if (user.role === "admin") {
 
         window.location.href =
             "admin-dashboard.html";
-
     }
-
 }
 
 
-// ==========================================
-// ADD SURPLUS FOOD
-// ==========================================
+// ============================================================
+// LOGOUT
+// ============================================================
+
+function logoutUser() {
+
+    localStorage.removeItem(
+        "smartfood_currentUser"
+    );
+
+    window.location.href = "index.html";
+}
+
+
+// ============================================================
+// ADD FOOD
+// ============================================================
 
 async function addFood() {
 
-    const foodName =
-        document.getElementById(
-            "food-name"
-        ).value.trim();
+    const currentUser = getCurrentUser();
 
+    if (!currentUser) {
+
+        alert("Please login first.");
+        window.location.href = "login.html";
+        return;
+    }
+
+    const foodName =
+        document.getElementById("food-name").value.trim();
 
     const foodType =
-        document.getElementById(
-            "food-type"
-        ).value;
-
+        document.getElementById("food-type").value;
 
     const quantity =
         Number(
-            document.getElementById(
-                "quantity"
-            ).value
+            document.getElementById("food-quantity").value
         );
 
-
     const availableFrom =
-        document.getElementById(
-            "available-from"
-        ).value;
-
+        document.getElementById("available-from").value;
 
     const availableUntil =
-        document.getElementById(
-            "available-until"
-        ).value;
-
+        document.getElementById("available-until").value;
 
     const location =
-        document.getElementById(
-            "food-location"
-        ).value.trim();
-
+        document.getElementById("food-location").value.trim();
 
     const recipientType =
-        document.getElementById(
-            "recipient-type"
-        ).value;
-
+        document.getElementById("recipient-type").value;
 
     const description =
-        document.getElementById(
-            "description"
-        ).value.trim();
-
+        document.getElementById("food-description").value.trim();
 
     if (
         foodName === "" ||
         foodType === "" ||
-        quantity <= 0 ||
+        !quantity ||
         availableFrom === "" ||
         availableUntil === "" ||
         location === ""
     ) {
 
-        alert(
-            "Please fill in all required fields."
-        );
-
+        alert("Please fill in all required fields.");
         return;
-
     }
 
+    const db = await initializeFirebase();
 
-    const currentUser =
-        JSON.parse(
-            localStorage.getItem(
-                "smartfood_currentUser"
-            )
-        );
-
-
-    if (!currentUser) {
-
-        alert(
-            "Please login as a Food Provider first."
-        );
-
-        window.location.href =
-            "login.html";
-
+    if (!db) {
         return;
-
     }
 
-
-    const newFood = {
-
-        id:
-            Date.now(),
-
-        providerId:
-            currentUser.id,
-
-        providerName:
-            currentUser.name,
-
-        foodName:
-            foodName,
-
-        foodType:
-            foodType,
-
-        quantity:
-            quantity,
-
-        availableFrom:
-            availableFrom,
-
-        availableUntil:
-            availableUntil,
-
-        location:
-            location,
-
-        recipientType:
-            recipientType,
-
-        description:
-            description,
-
-        status:
-            "available"
-
-    };
-
+    const {
+        ref,
+        push,
+        set
+    } = window.firebaseTools;
 
     try {
 
-        await saveFirebaseData(
-            "foods/" +
-            newFood.id,
-            newFood
-        );
+        const foodRef =
+            push(ref(db, "foods"));
 
+        const foodData = {
+
+            id: Date.now(),
+
+            providerId:
+                currentUser.id,
+
+            providerName:
+                currentUser.name,
+
+            providerLocation:
+                currentUser.location || location,
+
+            foodName:
+                foodName,
+
+            foodType:
+                foodType,
+
+            quantity:
+                quantity,
+
+            availableFrom:
+                availableFrom,
+
+            availableUntil:
+                availableUntil,
+
+            location:
+                location,
+
+            recipientType:
+                recipientType,
+
+            description:
+                description,
+
+            status:
+                "available",
+
+            createdAt:
+                new Date().toISOString()
+        };
+
+        await set(foodRef, foodData);
 
         alert(
-            "Surplus food published successfully!"
+            "Food listing added successfully!"
         );
-
 
         window.location.href =
             "provider-dashboard.html";
 
-    }
+    } catch (error) {
 
-    catch (error) {
-
-        console.error(
-            error
-        );
+        console.error(error);
 
         alert(
-            "Unable to publish food. Please try again."
+            "Unable to add food listing."
         );
-
     }
-
 }
 
 
-// ==========================================
-// GET ALL FOOD
-// ==========================================
+// ============================================================
+// LOAD PROVIDER DASHBOARD
+// ============================================================
 
-async function getFoods() {
+async function loadProviderDashboard() {
 
-    const data =
-        await getFirebaseData(
-            "foods"
-        );
-
-
-    if (!data) {
-
-        return [];
-
-    }
-
-
-    return Object.values(
-        data
-    );
-
-}
-
-
-// ==========================================
-// LOAD PROVIDER FOOD LISTINGS
-// ==========================================
-
-async function loadProviderFoods() {
-
-    const foodList =
-        document.getElementById(
-            "foodList"
-        );
-
-
-    if (!foodList) {
-
-        return;
-
-    }
-
-
-    const currentUser =
-        JSON.parse(
-            localStorage.getItem(
-                "smartfood_currentUser"
-            )
-        );
-
+    const currentUser = getCurrentUser();
 
     if (!currentUser) {
-
         return;
+    }
 
+    const welcome =
+        document.getElementById("providerWelcome");
+
+    if (welcome) {
+
+        welcome.textContent =
+            "Welcome, " + currentUser.name + "!";
     }
 
 
-    const foods =
-        await getFoods();
+    // --------------------------------------------------------
+    // PROVIDER EXACT LOCATION
+    // --------------------------------------------------------
 
+    const providerLocation =
+        document.getElementById("providerLocation");
 
-    const myFoods =
-        foods.filter(
-            function(food) {
+    if (providerLocation) {
 
-                return String(
-                    food.providerId
-                ) ===
-                String(
-                    currentUser.id
-                );
-
-            }
-        );
-
-
-    if (
-        myFoods.length ===
-        0
-    ) {
-
-        foodList.innerHTML = `
-
-            <p style="padding:20px;">
-                No surplus food listings yet.
-            </p>
-
-        `;
-
-        return;
-
-    }
-
-
-    foodList.innerHTML = "";
-
-
-    myFoods.forEach(
-        function(food) {
-
-            const foodItem =
-                document.createElement(
-                    "div"
-                );
-
-
-            foodItem.className =
-                "dashboard-food-item";
-
-
-            foodItem.innerHTML = `
-
-                <div class="dashboard-food-icon">
-                    🍱
-                </div>
-
-                <div class="food-info">
-
-                    <h3>
-                        ${food.foodName}
-                    </h3>
-
-                    <p>
-                        ${food.quantity}
-                        Meals · Available until
-                        ${food.availableUntil}
-                    </p>
-
-                    <span class="status available-status">
-                        ${food.status}
-                    </span>
-
-                </div>
-
-                <div class="food-action">
-
-                    <button
-                        onclick="viewFood('${food.id}')"
-                    >
-                        View
-                    </button>
-
-                </div>
-
-            `;
-
-
-            foodList.appendChild(
-                foodItem
+        providerLocation.textContent =
+            "📍 " +
+            (
+                currentUser.location ||
+                "Location not provided"
             );
-
-        }
-    );
-
-}
+    }
 
 
-// ==========================================
-// VIEW FOOD
-// ==========================================
-
-function viewFood(
-    foodId
-) {
-
-    localStorage.setItem(
-        "selectedFoodId",
-        foodId
-    );
-
-
-    window.location.href =
-        "food-details.html";
-
-}
-
-
-// ==========================================
-// AVAILABLE FOOD MARKETPLACE
-// ==========================================
-
-async function loadAvailableFoods() {
+    // --------------------------------------------------------
+    // LOAD FOOD LISTINGS
+    // --------------------------------------------------------
 
     const foodList =
-        document.getElementById(
-            "availableFoodList"
-        );
-
+        document.getElementById("foodList");
 
     if (!foodList) {
-
         return;
-
     }
 
+    const db =
+        await initializeFirebase();
 
-    const foods =
-        await getFoods();
-
-
-    displayAvailableFoods(
-        foods
-    );
-
-}
-
-
-// ==========================================
-// DISPLAY AVAILABLE FOOD
-// ==========================================
-
-function displayAvailableFoods(
-    foods
-) {
-
-    const foodList =
-        document.getElementById(
-            "availableFoodList"
-        );
-
-
-    if (!foodList) {
-
+    if (!db) {
         return;
-
     }
 
-
-    const availableFoods =
-        foods.filter(
-            function(food) {
-
-                return food.status ===
-                    "available";
-
-            }
-        );
-
-
-    if (
-        availableFoods.length ===
-        0
-    ) {
-
-        foodList.innerHTML = `
-
-            <div
-                style="
-                    padding:30px;
-                    text-align:center;
-                    width:100%;
-                "
-            >
-
-                <h3>
-                    No surplus food available
-                </h3>
-
-                <p>
-                    New food listings will appear here when providers
-                    publish surplus food.
-                </p>
-
-            </div>
-
-        `;
-
-        return;
-
-    }
-
-
-    foodList.innerHTML = "";
-
-
-    availableFoods.forEach(
-        function(food) {
-
-            const foodCard =
-                document.createElement(
-                    "div"
-                );
-
-
-            foodCard.className =
-                "market-food-card";
-
-
-            foodCard.innerHTML = `
-
-                <div class="market-food-top">
-
-                    <div class="market-food-icon">
-                        🍱
-                    </div>
-
-                    <span class="match-badge">
-                        Smart Match
-                    </span>
-
-                </div>
-
-                <h3>
-                    ${food.foodName}
-                </h3>
-
-                <p class="provider-name">
-                    ${food.providerName}
-                </p>
-
-                <div class="market-food-details">
-
-                    <div>
-
-                        <small>
-                            Quantity
-                        </small>
-
-                        <strong>
-                            ${food.quantity} Meals
-                        </strong>
-
-                    </div>
-
-                    <div>
-
-                        <small>
-                            Available Until
-                        </small>
-
-                        <strong>
-                            ${food.availableUntil}
-                        </strong>
-
-                    </div>
-
-                </div>
-
-                <div class="market-location">
-
-                    📍 ${food.location}
-
-                </div>
-
-                <a
-                    href="food-details.html"
-                    class="market-view-btn"
-                    onclick="selectFood('${food.id}')"
-                >
-                    View Details →
-                </a>
-
-            `;
-
-
-            foodList.appendChild(
-                foodCard
-            );
-
-        }
-    );
-
-}
-
-
-// ==========================================
-// SELECT FOOD
-// ==========================================
-
-function selectFood(
-    foodId
-) {
-
-    localStorage.setItem(
-        "selectedFoodId",
-        foodId
-    );
-
-}
-
-
-// ==========================================
-// FILTER FOOD
-// ==========================================
-
-async function filterFoods() {
-
-    const searchInput =
-        document.getElementById(
-            "foodSearch"
-        );
-
-
-    const typeFilter =
-        document.getElementById(
-            "foodTypeFilter"
-        );
-
-
-    const locationFilter =
-        document.getElementById(
-            "locationFilter"
-        );
-
-
-    if (
-        !searchInput ||
-        !typeFilter ||
-        !locationFilter
-    ) {
-
-        return;
-
-    }
-
-
-    const search =
-        searchInput.value
-            .trim()
-            .toLowerCase();
-
-
-    const selectedType =
-        typeFilter.value;
-
-
-    const selectedLocation =
-        locationFilter.value;
-
-
-    const foods =
-        await getFoods();
-
-
-    const filteredFoods =
-        foods.filter(
-            function(food) {
-
-                const matchesSearch =
-                    food.foodName
-                        .toLowerCase()
-                        .includes(
-                            search
-                        );
-
-
-                const matchesType =
-                    selectedType ===
-                    "all" ||
-                    food.foodType ===
-                    selectedType;
-
-
-                const matchesLocation =
-                    selectedLocation ===
-                    "all" ||
-                    food.location
-                        .toLowerCase()
-                        .includes(
-                            selectedLocation
-                                .toLowerCase()
-                        );
-
-
-                return (
-                    food.status ===
-                    "available" &&
-                    matchesSearch &&
-                    matchesType &&
-                    matchesLocation
-                );
-
-            }
-        );
-
-
-    displayAvailableFoods(
-        filteredFoods
-    );
-
-}
-
-
-// ==========================================
-// FOOD DETAILS
-// ==========================================
-
-async function loadFoodDetails() {
-
-    const foodNameElement =
-        document.getElementById(
-            "foodName"
-        );
-
-
-    if (!foodNameElement) {
-
-        return;
-
-    }
-
-
-    const selectedFoodId =
-        localStorage.getItem(
-            "selectedFoodId"
-        );
-
-
-    const foods =
-        await getFoods();
-
-
-    const food =
-        foods.find(
-            function(item) {
-
-                return String(
-                    item.id
-                ) ===
-                String(
-                    selectedFoodId
-                );
-
-            }
-        );
-
-
-    if (!food) {
-
-        foodNameElement.textContent =
-            "Food listing not found.";
-
-        return;
-
-    }
-
-
-    document.getElementById(
-        "foodName"
-    ).textContent =
-        food.foodName;
-
-
-    document.getElementById(
-        "providerName"
-    ).textContent =
-        "Provided by " +
-        food.providerName;
-
-
-    document.getElementById(
-        "foodDescription"
-    ).textContent =
-        food.description ||
-        "No description provided by the food provider.";
-
-
-    document.getElementById(
-        "foodQuantity"
-    ).textContent =
-        food.quantity +
-        " Meals";
-
-
-    document.getElementById(
-        "foodAvailableUntil"
-    ).textContent =
-        food.availableUntil;
-
-
-    document.getElementById(
-        "foodLocation"
-    ).textContent =
-        food.location;
-
-
-    document.getElementById(
-        "foodType"
-    ).textContent =
-        food.foodType;
-
-
-    document.getElementById(
-        "pickupLocation"
-    ).textContent =
-        "📍 " +
-        food.location;
-
-
-    document.getElementById(
-        "requestAvailable"
-    ).textContent =
-        food.quantity +
-        " Meals";
-
-
-    document.getElementById(
-        "requestExpires"
-    ).textContent =
-        food.availableUntil;
-
-
-    const quantityInput =
-        document.getElementById(
-            "requestQuantity"
-        );
-
-
-    if (quantityInput) {
-
-        quantityInput.max =
-            food.quantity;
-
-
-        quantityInput.value =
-            Math.min(
-                1,
-                food.quantity
-            );
-
-    }
-
-}
-
-
-// ==========================================
-// REQUEST FOOD
-// ==========================================
-
-async function requestFood() {
-
-    const selectedFoodId =
-        localStorage.getItem(
-            "selectedFoodId"
-        );
-
-
-    const foods =
-        await getFoods();
-
-
-    const food =
-        foods.find(
-            function(item) {
-
-                return String(
-                    item.id
-                ) ===
-                String(
-                    selectedFoodId
-                );
-
-            }
-        );
-
-
-    if (!food) {
-
-        alert(
-            "Food listing not found."
-        );
-
-        return;
-
-    }
-
-
-    const currentUser =
-        JSON.parse(
-            localStorage.getItem(
-                "smartfood_currentUser"
-            )
-        );
-
-
-    if (!currentUser) {
-
-        alert(
-            "Please login as a Recipient first."
-        );
-
-        window.location.href =
-            "login.html";
-
-        return;
-
-    }
-
-
-    if (
-        currentUser.role !==
-        "recipient"
-    ) {
-
-        alert(
-            "Only recipients can request surplus food."
-        );
-
-        return;
-
-    }
-
-
-    const quantity =
-        Number(
-            document.getElementById(
-                "requestQuantity"
-            ).value
-        );
-
-
-    const message =
-        document.getElementById(
-            "requestMessage"
-        ).value.trim();
-
-
-    if (
-        quantity <=
-        0
-    ) {
-
-        alert(
-            "Please enter a valid quantity."
-        );
-
-        return;
-
-    }
-
-
-    if (
-        quantity >
-        food.quantity
-    ) {
-
-        alert(
-            "Requested quantity cannot be greater than the available quantity."
-        );
-
-        return;
-
-    }
-
-
-    const newRequest = {
-
-        id:
-            Date.now(),
-
-        foodId:
-            food.id,
-
-        providerId:
-            food.providerId,
-
-        providerName:
-            food.providerName,
-
-        foodName:
-            food.foodName,
-
-        recipientId:
-            currentUser.id,
-
-        recipientName:
-            currentUser.name,
-
-        quantity:
-            quantity,
-
-        message:
-            message,
-
-        status:
-            "pending",
-
-        createdAt:
-            Date.now()
-
-    };
-
+    const {
+        ref,
+        get
+    } = window.firebaseTools;
 
     try {
 
-        await saveFirebaseData(
-            "requests/" +
-            newRequest.id,
-            newRequest
-        );
+        const snapshot =
+            await get(ref(db, "foods"));
 
+        const foods =
+            snapshot.exists()
+                ? Object.values(snapshot.val())
+                : [];
 
-        alert(
-            "Food request sent successfully!"
-        );
+        const providerFoods =
+            foods.filter(function(food) {
 
+                return String(food.providerId) ===
+                    String(currentUser.id);
+            });
 
-        window.location.href =
-            "recipient-dashboard.html";
 
-    }
+        // ----------------------------------------------------
+        // FOOD LIST
+        // ----------------------------------------------------
 
-    catch (error) {
+        foodList.innerHTML = "";
 
-        console.error(
-            error
-        );
+        if (providerFoods.length === 0) {
 
-        alert(
-            "Unable to send request. Please try again."
-        );
+            foodList.innerHTML =
+                "<p>No food listings available.</p>";
 
-    }
+        } else {
 
-}
+            providerFoods.reverse().forEach(function(food) {
 
+                const card =
+                    document.createElement("div");
 
-// ==========================================
-// GET ALL REQUESTS
-// ==========================================
+                card.className =
+                    "food-card";
 
-async function getRequests() {
+                card.innerHTML = `
 
-    const data =
-        await getFirebaseData(
-            "requests"
-        );
+                    <h3>${food.foodName}</h3>
 
+                    <p>
+                        <strong>Type:</strong>
+                        ${food.foodType}
+                    </p>
 
-    if (!data) {
+                    <p>
+                        <strong>Quantity:</strong>
+                        ${food.quantity} meals
+                    </p>
 
-        return [];
+                    <p>
+                        📍 <strong>Location:</strong>
+                        ${food.location || "Not provided"}
+                    </p>
 
-    }
+                    <p>
+                        <strong>Available:</strong>
+                        ${food.availableFrom}
+                        -
+                        ${food.availableUntil}
+                    </p>
 
+                    <p>
+                        <strong>Status:</strong>
+                        ${food.status}
+                    </p>
 
-    return Object.values(
-        data
-    );
+                `;
 
-}
+                foodList.appendChild(card);
+            });
+        }
 
 
-// ==========================================
-// RECIPIENT DASHBOARD
-// ==========================================
+        // ----------------------------------------------------
+        // TOTAL PREPARED
+        // ----------------------------------------------------
 
-async function loadRecipientDashboard() {
-
-    const welcomeMessage =
-        document.getElementById(
-            "welcomeMessage"
-        );
-
-
-    if (!welcomeMessage) {
-
-        return;
-
-    }
-
-
-    const currentUser =
-        JSON.parse(
-            localStorage.getItem(
-                "smartfood_currentUser"
-            )
-        );
-
-
-    if (!currentUser) {
-
-        alert(
-            "Please login first."
-        );
-
-        window.location.href =
-            "login.html";
-
-        return;
-
-    }
-
-
-    welcomeMessage.textContent =
-        "Welcome back, " +
-        currentUser.name +
-        "! 👋";
-
-
-    const foods =
-        await getFoods();
-
-
-    const availableFoods =
-        foods.filter(
-            function(food) {
-
-                return food.status ===
-                    "available";
-
-            }
-        );
-
-
-    document.getElementById(
-        "availableListings"
-    ).textContent =
-        availableFoods.length;
-
-
-    const foodList =
-        document.getElementById(
-            "recommendedFoodList"
-        );
-
-
-    if (
-        availableFoods.length ===
-        0
-    ) {
-
-        foodList.innerHTML = `
-
-            <p style="padding:20px;">
-                No surplus food is currently available.
-            </p>
-
-        `;
-
-    }
-
-    else {
-
-        foodList.innerHTML =
-            "";
-
-
-        availableFoods
-            .slice(
-                0,
-                3
-            )
-            .forEach(
-                function(food) {
-
-                    const foodItem =
-                        document.createElement(
-                            "div"
-                        );
-
-
-                    foodItem.className =
-                        "dashboard-food-item";
-
-
-                    foodItem.innerHTML = `
-
-                        <div class="dashboard-food-icon">
-                            🍱
-                        </div>
-
-                        <div class="food-info">
-
-                            <h3>
-                                ${food.foodName}
-                            </h3>
-
-                            <p>
-                                ${food.quantity}
-                                Meals ·
-                                ${food.location}
-                            </p>
-
-                            <span class="status available-status">
-                                Available
-                            </span>
-
-                        </div>
-
-                        <div class="food-action">
-
-                            <a
-                                href="food-details.html"
-                                class="food-view-link"
-                                onclick="selectFood('${food.id}')"
-                            >
-                                View
-                            </a>
-
-                        </div>
-
-                    `;
-
-
-                    foodList.appendChild(
-                        foodItem
-                    );
-
-                }
-            );
-
-    }
-
-
-    const allRequests =
-        await getRequests();
-
-
-    const myRequests =
-        allRequests.filter(
-            function(request) {
-
-                return String(
-                    request.recipientId
-                ) ===
-                String(
-                    currentUser.id
-                );
-
-            }
-        );
-
-
-    const mealsRequested =
-        myRequests.reduce(
-            function(total, request) {
-
-                return total +
-                    Number(
-                        request.quantity
-                    );
-
-            },
-            0
-        );
-
-
-    document.getElementById(
-        "mealsRequested"
-    ).textContent =
-        mealsRequested;
-
-
-    document.getElementById(
-        "impactRequested"
-    ).textContent =
-        mealsRequested;
-
-
-    const activeRequests =
-        myRequests.filter(
-            function(request) {
-
-                return (
-                    request.status ===
-                    "pending" ||
-                    request.status ===
-                    "accepted" ||
-                    request.status ===
-                    "ready"
-                );
-
-            }
-        );
-
-
-    document.getElementById(
-        "activeRequests"
-    ).textContent =
-        activeRequests.length;
-
-
-    document.getElementById(
-        "requestCount"
-    ).textContent =
-        activeRequests.length +
-        " Active";
-
-
-    document.getElementById(
-        "impactActive"
-    ).textContent =
-        activeRequests.length;
-
-
-    const mealsReceived =
-        myRequests
-            .filter(
-                function(request) {
-
-                    return (
-                        request.status ===
-                        "completed" ||
-                        request.status ===
-                        "received"
-                    );
-
-                }
-            )
-            .reduce(
-                function(total, request) {
+        const totalPrepared =
+            providerFoods.reduce(
+                function(total, food) {
 
                     return total +
-                        Number(
-                            request.quantity
-                        );
+                        Number(food.quantity || 0);
 
                 },
                 0
             );
 
+        const preparedElement =
+            document.getElementById("providerPrepared");
 
-    document.getElementById(
-        "mealsReceived"
-    ).textContent =
-        mealsReceived;
+        if (preparedElement) {
 
-
-    document.getElementById(
-        "impactMeals"
-    ).textContent =
-        mealsReceived;
+            preparedElement.textContent =
+                totalPrepared + " Meals";
+        }
 
 
-    document.getElementById(
-        "impactReceived"
-    ).textContent =
-        mealsReceived;
+        // ----------------------------------------------------
+        // SURPLUS
+        // ----------------------------------------------------
+
+        const surplusElement =
+            document.getElementById("providerSurplus");
+
+        if (surplusElement) {
+
+            surplusElement.textContent =
+                totalPrepared + " Meals";
+        }
 
 
-    const requestList =
-        document.getElementById(
-            "requestList"
+        // ----------------------------------------------------
+        // REQUESTS
+        // ----------------------------------------------------
+
+        await loadProviderRequests(
+            currentUser,
+            db
         );
 
+    } catch (error) {
 
-    if (
-        myRequests.length ===
-        0
-    ) {
-
-        requestList.innerHTML = `
-
-            <p style="padding:20px;">
-                You have not requested any food yet.
-            </p>
-
-        `;
-
+        console.error(
+            "Provider dashboard error:",
+            error
+        );
     }
-
-    else {
-
-        requestList.innerHTML =
-            "";
-
-
-        myRequests.forEach(
-            function(request) {
-
-                const requestItem =
-                    document.createElement(
-                        "div"
-                    );
-
-
-                requestItem.className =
-                    "request-item";
-
-
-                let statusClass =
-                    "pending-status";
-
-
-                if (
-                    request.status ===
-                    "accepted" ||
-                    request.status ===
-                    "ready" ||
-                    request.status ===
-                    "completed" ||
-                    request.status ===
-                    "received"
-                ) {
-
-                    statusClass =
-                        "available-status";
-
-                }
-
-
-                let statusText =
-                    request.status;
-
-
-                if (
-                    request.status ===
-                    "pending"
-                ) {
-
-                    statusText =
-                        "Pending";
-
-                }
-
-                else if (
-                    request.status ===
-                    "accepted"
-                ) {
-
-                    statusText =
-                        "Accepted";
-
-                }
-
-                else if (
-                    request.status ===
-                    "ready"
-                ) {
-
-                    statusText =
-                        "Ready";
-
-                }
-
-                else if (
-                    request.status ===
-                    "completed"
-                ) {
-
-                    statusText =
-                        "Completed";
-
-                }
-
-                else if (
-                    request.status ===
-                    "received"
-                ) {
-
-                    statusText =
-                        "Received";
-
-                }
-
-
-                requestItem.innerHTML = `
-
-                    <div class="recipient-avatar">
-                        🍱
-                    </div>
-
-                    <div class="request-info">
-
-                        <h3>
-                            ${request.foodName}
-                        </h3>
-
-                        <p>
-                            Requested
-                            ${request.quantity}
-                            meals
-                        </p>
-
-                        <small>
-                            Provider:
-                            ${request.providerName}
-                        </small>
-
-                    </div>
-
-                    <span
-                        class="status ${statusClass}"
-                    >
-                        ${statusText}
-                    </span>
-
-                `;
-
-
-                requestList.appendChild(
-                    requestItem
-                );
-
-            }
-        );
-
-    }
-
-
-    const providerIds =
-        new Set(
-            myRequests.map(
-                function(request) {
-
-                    return request.providerId;
-
-                }
-            )
-        );
-
-
-    document.getElementById(
-        "impactProviders"
-    ).textContent =
-        providerIds.size;
-
 }
 
 
-// ==========================================
-// PROVIDER DASHBOARD
-// ==========================================
+// ============================================================
+// LOAD PROVIDER REQUESTS
+// ============================================================
 
-async function loadProviderDashboard() {
+async function loadProviderRequests(
+    currentUser,
+    db
+) {
 
     const requestList =
         document.getElementById(
             "providerRequestList"
         );
 
+    const requestCount =
+        document.getElementById(
+            "providerRequestCount"
+        );
 
     if (!requestList) {
-
         return;
-
     }
 
+    const {
+        ref,
+        get
+    } = window.firebaseTools;
 
-    const currentUser =
-        JSON.parse(
-            localStorage.getItem(
-                "smartfood_currentUser"
-            )
-        );
+    try {
 
+        const snapshot =
+            await get(ref(db, "requests"));
 
-    if (!currentUser) {
+        const requests =
+            snapshot.exists()
+                ? Object.values(snapshot.val())
+                : [];
 
-        alert(
-            "Please login first."
-        );
+        const providerRequests =
+            requests.filter(function(request) {
 
-        window.location.href =
-            "login.html";
+                return String(request.providerId) ===
+                    String(currentUser.id);
+            });
 
-        return;
 
-    }
+        if (requestCount) {
 
+            requestCount.textContent =
+                providerRequests.length;
+        }
 
-    const providerWelcome =
-        document.getElementById(
-            "providerWelcome"
-        );
 
+        requestList.innerHTML = "";
 
-    if (providerWelcome) {
+        if (providerRequests.length === 0) {
 
-        providerWelcome.textContent =
-            "Welcome back, " +
-            currentUser.name +
-            "! 👋";
+            requestList.innerHTML =
+                "<p>No donation requests yet.</p>";
 
-    }
+            return;
+        }
 
 
-    const foods =
-        await getFoods();
-
-
-    const myFoods =
-        foods.filter(
-            function(food) {
-
-                return String(
-                    food.providerId
-                ) ===
-                String(
-                    currentUser.id
-                );
-
-            }
-        );
-
-
-    const foodList =
-        document.getElementById(
-            "foodList"
-        );
-
-
-    if (
-        myFoods.length ===
-        0
-    ) {
-
-        foodList.innerHTML = `
-
-            <p style="padding:20px;">
-                You have not added any surplus food yet.
-            </p>
-
-        `;
-
-    }
-
-    else {
-
-        foodList.innerHTML =
-            "";
-
-
-        myFoods.forEach(
-            function(food) {
-
-                const foodItem =
-                    document.createElement(
-                        "div"
-                    );
-
-
-                foodItem.className =
-                    "dashboard-food-item";
-
-
-                let statusClass =
-                    "available-status";
-
-
-                if (
-                    food.status !==
-                    "available"
-                ) {
-
-                    statusClass =
-                        "pending-status";
-
-                }
-
-
-                let statusText =
-                    food.status;
-
-
-                if (
-                    food.status ===
-                    "available"
-                ) {
-
-                    statusText =
-                        "Available";
-
-                }
-
-                else if (
-                    food.status ===
-                    "completed"
-                ) {
-
-                    statusText =
-                        "Completed";
-
-                }
-
-
-                foodItem.innerHTML = `
-
-                    <div class="dashboard-food-icon">
-                        🍱
-                    </div>
-
-                    <div class="food-info">
-
-                        <h3>
-                            ${food.foodName}
-                        </h3>
-
-                        <p>
-                            ${food.quantity}
-                            Meals ·
-                            Available until
-                            ${food.availableUntil}
-                        </p>
-
-                        <span class="status ${statusClass}">
-                            ${statusText}
-                        </span>
-
-                    </div>
-
-                    <div class="food-action">
-
-                        <button
-                            onclick="viewFood('${food.id}')"
-                        >
-                            View
-                        </button>
-
-                    </div>
-
-                `;
-
-
-                foodList.appendChild(
-                    foodItem
-                );
-
-            }
-        );
-
-    }
-
-
-    const allRequests =
-        await getRequests();
-
-
-    const providerRequests =
-        allRequests.filter(
+        providerRequests.reverse().forEach(
             function(request) {
 
-                return String(
-                    request.providerId
-                ) ===
-                String(
-                    currentUser.id
-                );
+                const card =
+                    document.createElement("div");
 
-            }
-        );
+                card.className =
+                    "request-card";
 
+                card.innerHTML = `
 
-    const pendingRequests =
-        providerRequests.filter(
-            function(request) {
+                    <h3>
+                        ${request.foodName || "Food Request"}
+                    </h3>
 
-                return request.status ===
-                    "pending";
+                    <p>
+                        <strong>Recipient:</strong>
+                        ${request.recipientName}
+                    </p>
 
-            }
-        );
+                    <p>
+                        <strong>Quantity:</strong>
+                        ${request.quantity} meals
+                    </p>
 
+                    <p>
+                        <strong>Message:</strong>
+                        ${request.message || "No message"}
+                    </p>
 
-    document.getElementById(
-        "providerRequestCount"
-    ).textContent =
-        pendingRequests.length +
-        " New";
+                    <p>
+                        <strong>Status:</strong>
+                        ${request.status}
+                    </p>
 
-
-    if (
-        providerRequests.length ===
-        0
-    ) {
-
-        requestList.innerHTML = `
-
-            <p style="padding:20px;">
-                No donation requests yet.
-            </p>
-
-        `;
-
-    }
-
-    else {
-
-        requestList.innerHTML =
-            "";
-
-
-        providerRequests.forEach(
-            function(request) {
-
-                const requestItem =
-                    document.createElement(
-                        "div"
-                    );
-
-
-                requestItem.className =
-                    "request-item";
-
-
-                let statusClass =
-                    "pending-status";
-
-
-                if (
-                    request.status ===
-                    "accepted" ||
-                    request.status ===
-                    "ready" ||
-                    request.status ===
-                    "completed" ||
-                    request.status ===
-                    "received"
-                ) {
-
-                    statusClass =
-                        "available-status";
-
-                }
-
-
-                let statusText =
-                    request.status;
-
-
-                if (
-                    request.status ===
-                    "pending"
-                ) {
-
-                    statusText =
-                        "Pending";
-
-                }
-
-                else if (
-                    request.status ===
-                    "accepted"
-                ) {
-
-                    statusText =
-                        "Accepted";
-
-                }
-
-                else if (
-                    request.status ===
-                    "rejected"
-                ) {
-
-                    statusText =
-                        "Rejected";
-
-                }
-
-                else if (
-                    request.status ===
-                    "ready"
-                ) {
-
-                    statusText =
-                        "Ready";
-
-                }
-
-                else if (
-                    request.status ===
-                    "completed"
-                ) {
-
-                    statusText =
-                        "Completed";
-
-                }
-
-                else if (
-                    request.status ===
-                    "received"
-                ) {
-
-                    statusText =
-                        "Received";
-
-                }
-
-
-                let buttons =
-                    "";
-
-
-                if (
-                    request.status ===
-                    "pending"
-                ) {
-
-                    buttons = `
-
-                        <div class="request-buttons">
-
+                    ${
+                        request.status === "pending"
+                        ? `
                             <button
-                                class="accept-btn"
-                                onclick="acceptRequest('${request.id}')"
-                            >
+                                onclick="acceptRequest('${request.id}')">
                                 Accept
                             </button>
 
                             <button
-                                class="reject-btn"
-                                onclick="rejectRequest('${request.id}')"
-                            >
+                                onclick="rejectRequest('${request.id}')">
                                 Reject
                             </button>
+                          `
+                        : ""
+                    }
 
-                        </div>
-
-                    `;
-
-                }
-
-
-                else if (
-                    request.status ===
-                    "accepted"
-                ) {
-
-                    buttons = `
-
-                        <div class="request-buttons">
-
+                    ${
+                        request.status === "accepted"
+                        ? `
                             <button
-                                class="accept-btn"
-                                onclick="completeDonation('${request.id}')"
-                            >
-                                Mark Donation Complete
+                                onclick="completeDonation('${request.id}')">
+                                Complete Donation
                             </button>
-
-                        </div>
-
-                    `;
-
-                }
-
-
-                else {
-
-                    buttons = `
-
-                        <span class="status ${statusClass}">
-                            ${statusText}
-                        </span>
-
-                    `;
-
-                }
-
-
-                requestItem.innerHTML = `
-
-                    <div class="recipient-avatar">
-                        🤝
-                    </div>
-
-                    <div class="request-info">
-
-                        <h3>
-                            ${request.recipientName}
-                        </h3>
-
-                        <p>
-                            ${request.foodName}
-                            -
-                            ${request.quantity}
-                            meals
-                        </p>
-
-                        <small>
-                            ${
-                                request.message ||
-                                "No message provided"
-                            }
-                        </small>
-
-                    </div>
-
-                    ${buttons}
+                          `
+                        : ""
+                    }
 
                 `;
 
-
-                requestList.appendChild(
-                    requestItem
-                );
-
+                requestList.appendChild(card);
             }
         );
 
+    } catch (error) {
+
+        console.error(
+            "Request loading error:",
+            error
+        );
+    }
+}
+
+
+// ============================================================
+// ACCEPT REQUEST
+// ============================================================
+
+async function acceptRequest(requestId) {
+
+    const db =
+        await initializeFirebase();
+
+    if (!db) {
+        return;
     }
 
+    const {
+        ref,
+        update
+    } = window.firebaseTools;
 
-    const completedRequests =
-        providerRequests.filter(
-            function(request) {
+    try {
 
-                return (
-                    request.status ===
-                    "completed" ||
-                    request.status ===
-                    "received"
-                );
-
+        await update(
+            ref(db, "requests/" + requestId),
+            {
+                status: "accepted",
+                updatedAt:
+                    new Date().toISOString()
             }
         );
 
+        alert(
+            "Donation request accepted."
+        );
 
-    const donatedMeals =
-        completedRequests.reduce(
-            function(total, request) {
+        location.reload();
 
-                return total +
-                    Number(
-                        request.quantity
-                    );
+    } catch (error) {
 
-            },
+        console.error(error);
+
+        alert(
+            "Unable to accept request."
+        );
+    }
+}
+
+
+// ============================================================
+// REJECT REQUEST
+// ============================================================
+
+async function rejectRequest(requestId) {
+
+    const db =
+        await initializeFirebase();
+
+    if (!db) {
+        return;
+    }
+
+    const {
+        ref,
+        update
+    } = window.firebaseTools;
+
+    try {
+
+        await update(
+            ref(db, "requests/" + requestId),
+            {
+                status: "rejected",
+                updatedAt:
+                    new Date().toISOString()
+            }
+        );
+
+        alert(
+            "Donation request rejected."
+        );
+
+        location.reload();
+
+    } catch (error) {
+
+        console.error(error);
+
+        alert(
+            "Unable to reject request."
+        );
+    }
+}
+
+
+// ============================================================
+// COMPLETE DONATION
+// ============================================================
+
+async function completeDonation(requestId) {
+
+    const db =
+        await initializeFirebase();
+
+    if (!db) {
+        return;
+    }
+
+    const {
+        ref,
+        update
+    } = window.firebaseTools;
+
+    try {
+
+        await update(
+            ref(db, "requests/" + requestId),
+            {
+                status: "completed",
+                completedAt:
+                    new Date().toISOString()
+            }
+        );
+
+        alert(
+            "Donation marked as completed."
+        );
+
+        location.reload();
+
+    } catch (error) {
+
+        console.error(error);
+
+        alert(
+            "Unable to complete donation."
+        );
+    }
+}
+
+
+// ============================================================
+// LOAD RECIPIENT DASHBOARD
+// ============================================================
+
+async function loadRecipientDashboard() {
+
+    const currentUser =
+        getCurrentUser();
+
+    if (!currentUser) {
+        return;
+    }
+
+    const welcome =
+        document.getElementById(
+            "recipientWelcome"
+        );
+
+    if (welcome) {
+
+        welcome.textContent =
+            "Welcome, " + currentUser.name + "!";
+    }
+
+    const db =
+        await initializeFirebase();
+
+    if (!db) {
+        return;
+    }
+
+    const {
+        ref,
+        get
+    } = window.firebaseTools;
+
+    try {
+
+        const snapshot =
+            await get(ref(db, "requests"));
+
+        const requests =
+            snapshot.exists()
+                ? Object.values(snapshot.val())
+                : [];
+
+        const myRequests =
+            requests.filter(function(request) {
+
+                return String(request.recipientId) ===
+                    String(currentUser.id);
+            });
+
+        const requestList =
+            document.getElementById(
+                "recipientRequestList"
+            );
+
+        if (!requestList) {
+            return;
+        }
+
+        requestList.innerHTML = "";
+
+        if (myRequests.length === 0) {
+
+            requestList.innerHTML =
+                "<p>No food requests yet.</p>";
+
+            return;
+        }
+
+        myRequests.reverse().forEach(
+            function(request) {
+
+                const card =
+                    document.createElement("div");
+
+                card.className =
+                    "request-card";
+
+                card.innerHTML = `
+
+                    <h3>
+                        ${request.foodName || "Food"}
+                    </h3>
+
+                    <p>
+                        <strong>Provider:</strong>
+                        ${request.providerName}
+                    </p>
+
+                    <p>
+                        <strong>Quantity:</strong>
+                        ${request.quantity} meals
+                    </p>
+
+                    <p>
+                        <strong>Status:</strong>
+                        ${request.status}
+                    </p>
+
+                    <p>
+                        <strong>Your Message:</strong>
+                        ${request.message || "No message"}
+                    </p>
+
+                `;
+
+                requestList.appendChild(card);
+            }
+        );
+
+    } catch (error) {
+
+        console.error(
+            "Recipient dashboard error:",
+            error
+        );
+    }
+}
+
+
+// ============================================================
+// LOAD AVAILABLE FOOD
+// ============================================================
+
+async function loadAvailableFood() {
+
+    const foodContainer =
+        document.getElementById(
+            "availableFoodList"
+        );
+
+    if (!foodContainer) {
+        return;
+    }
+
+    const db =
+        await initializeFirebase();
+
+    if (!db) {
+        return;
+    }
+
+    const {
+        ref,
+        get
+    } = window.firebaseTools;
+
+    try {
+
+        const snapshot =
+            await get(ref(db, "foods"));
+
+        const foods =
+            snapshot.exists()
+                ? Object.values(snapshot.val())
+                : [];
+
+        const availableFoods =
+            foods.filter(function(food) {
+
+                return food.status === "available";
+            });
+
+        foodContainer.innerHTML = "";
+
+        if (availableFoods.length === 0) {
+
+            foodContainer.innerHTML =
+                "<p>No food available currently.</p>";
+
+            return;
+        }
+
+        availableFoods.forEach(
+            function(food) {
+
+                const card =
+                    document.createElement("div");
+
+                card.className =
+                    "food-card";
+
+                card.innerHTML = `
+
+                    <h3>
+                        ${food.foodName}
+                    </h3>
+
+                    <p>
+                        <strong>Type:</strong>
+                        ${food.foodType}
+                    </p>
+
+                    <p>
+                        <strong>Quantity:</strong>
+                        ${food.quantity} meals
+                    </p>
+
+                    <p>
+                        📍 <strong>Location:</strong>
+                        ${food.location || "Not provided"}
+                    </p>
+
+                    <p>
+                        <strong>Provider:</strong>
+                        ${food.providerName}
+                    </p>
+
+                    <a
+                        href="food-details.html?id=${food.id}">
+                        View Details
+                    </a>
+
+                `;
+
+                foodContainer.appendChild(card);
+            }
+        );
+
+    } catch (error) {
+
+        console.error(
+            "Available food error:",
+            error
+        );
+    }
+}
+
+
+// ============================================================
+// LOAD FOOD DETAILS
+// ============================================================
+
+async function loadFoodDetails() {
+
+    const params =
+        new URLSearchParams(
+            window.location.search
+        );
+
+    const foodId =
+        params.get("id");
+
+    if (!foodId) {
+        return;
+    }
+
+    const db =
+        await initializeFirebase();
+
+    if (!db) {
+        return;
+    }
+
+    const {
+        ref,
+        get
+    } = window.firebaseTools;
+
+    try {
+
+        const snapshot =
+            await get(ref(db, "foods"));
+
+        if (!snapshot.exists()) {
+            return;
+        }
+
+        const foods =
+            Object.values(snapshot.val());
+
+        const food =
+            foods.find(function(item) {
+
+                return String(item.id) ===
+                    String(foodId);
+            });
+
+        if (!food) {
+
+            alert("Food listing not found.");
+            return;
+        }
+
+        const nameElement =
+            document.getElementById(
+                "foodDetailName"
+            );
+
+        if (nameElement) {
+            nameElement.textContent =
+                food.foodName;
+        }
+
+        const details =
+            document.getElementById(
+                "foodDetails"
+            );
+
+        if (details) {
+
+            details.innerHTML = `
+
+                <p>
+                    <strong>Food Type:</strong>
+                    ${food.foodType}
+                </p>
+
+                <p>
+                    <strong>Quantity:</strong>
+                    ${food.quantity} meals
+                </p>
+
+                <p>
+                    📍 <strong>Location:</strong>
+                    ${food.location || "Not provided"}
+                </p>
+
+                <p>
+                    <strong>Provider:</strong>
+                    ${food.providerName}
+                </p>
+
+                <p>
+                    <strong>Available From:</strong>
+                    ${food.availableFrom}
+                </p>
+
+                <p>
+                    <strong>Available Until:</strong>
+                    ${food.availableUntil}
+                </p>
+
+                <p>
+                    <strong>Description:</strong>
+                    ${food.description || "No description"}
+                </p>
+
+            `;
+        }
+
+        window.currentFood =
+            food;
+
+    } catch (error) {
+
+        console.error(
+            "Food details error:",
+            error
+        );
+    }
+}
+
+
+// ============================================================
+// REQUEST FOOD
+// ============================================================
+
+async function requestFood() {
+
+    const currentUser =
+        getCurrentUser();
+
+    if (!currentUser) {
+
+        alert("Please login first.");
+        window.location.href =
+            "login.html";
+
+        return;
+    }
+
+    const food =
+        window.currentFood;
+
+    if (!food) {
+
+        alert(
+            "Food information not available."
+        );
+
+        return;
+    }
+
+    const quantityElement =
+        document.getElementById(
+            "request-quantity"
+        );
+
+    const messageElement =
+        document.getElementById(
+            "request-message"
+        );
+
+    const quantity =
+        Number(
+            quantityElement
+                ? quantityElement.value
+                : food.quantity
+        );
+
+    const message =
+        messageElement
+            ? messageElement.value.trim()
+            : "";
+
+    if (!quantity || quantity <= 0) {
+
+        alert(
+            "Please enter a valid quantity."
+        );
+
+        return;
+    }
+
+    if (quantity > Number(food.quantity)) {
+
+        alert(
+            "Requested quantity cannot exceed available quantity."
+        );
+
+        return;
+    }
+
+    const db =
+        await initializeFirebase();
+
+    if (!db) {
+        return;
+    }
+
+    const {
+        ref,
+        push,
+        set
+    } = window.firebaseTools;
+
+    try {
+
+        const requestRef =
+            push(ref(db, "requests"));
+
+        const requestData = {
+
+            id: requestRef.key,
+
+            foodId:
+                food.id,
+
+            foodName:
+                food.foodName,
+
+            providerId:
+                food.providerId,
+
+            providerName:
+                food.providerName,
+
+            providerLocation:
+                food.providerLocation ||
+                food.location,
+
+            recipientId:
+                currentUser.id,
+
+            recipientName:
+                currentUser.name,
+
+            recipientLocation:
+                currentUser.location || "",
+
+            quantity:
+                quantity,
+
+            message:
+                message,
+
+            status:
+                "pending",
+
+            createdAt:
+                new Date().toISOString()
+        };
+
+        await set(
+            requestRef,
+            requestData
+        );
+
+        alert(
+            "Food request sent successfully!"
+        );
+
+        window.location.href =
+            "recipient-dashboard.html";
+
+    } catch (error) {
+
+        console.error(error);
+
+        alert(
+            "Unable to send food request."
+        );
+    }
+}
+
+
+// ============================================================
+// WASTE TRACKER
+// ============================================================
+
+function calculateWaste() {
+
+    const prepared =
+        Number(
+            document.getElementById(
+                "food-prepared"
+            ).value
+        );
+
+    const consumed =
+        Number(
+            document.getElementById(
+                "food-consumed"
+            ).value
+        );
+
+    const donated =
+        Number(
+            document.getElementById(
+                "food-donated"
+            ).value
+        );
+
+    const wasted =
+        prepared -
+        consumed -
+        donated;
+
+    const wasteElement =
+        document.getElementById(
+            "food-wasted"
+        );
+
+    if (wasteElement) {
+
+        wasteElement.value =
+            wasted >= 0
+                ? wasted
+                : 0;
+    }
+
+    const reduction =
+        prepared > 0
+            ? (
+                ((prepared - wasted) /
+                    prepared) *
+                100
+              ).toFixed(1)
+            : 0;
+
+    const reductionElement =
+        document.getElementById(
+            "reduction-percentage"
+        );
+
+    if (reductionElement) {
+
+        reductionElement.textContent =
+            reduction + "%";
+    }
+}
+
+
+// ============================================================
+// SAVE WASTE DATA
+// ============================================================
+
+function saveWasteData() {
+
+    const prepared =
+        Number(
+            document.getElementById(
+                "food-prepared"
+            ).value
+        );
+
+    const consumed =
+        Number(
+            document.getElementById(
+                "food-consumed"
+            ).value
+        );
+
+    const donated =
+        Number(
+            document.getElementById(
+                "food-donated"
+            ).value
+        );
+
+    const wasted =
+        Math.max(
+            prepared -
+            consumed -
+            donated,
             0
         );
 
+    const data = {
 
-    document.getElementById(
-        "providerDonated"
-    ).textContent =
-        donatedMeals +
-        " Meals";
+        prepared:
+            prepared,
+
+        consumed:
+            consumed,
+
+        donated:
+            donated,
+
+        wasted:
+            wasted,
+
+        date:
+            new Date().toISOString()
+    };
+
+    localStorage.setItem(
+        "smartfood_wasteData",
+        JSON.stringify(data)
+    );
+
+    alert(
+        "Waste tracking data saved successfully!"
+    );
+}
 
 
-    document.getElementById(
-        "impactDonated"
-    ).textContent =
-        donatedMeals;
+// ============================================================
+// LOAD ANALYTICS
+// ============================================================
 
+async function loadAnalytics() {
 
-    const surplusMeals =
-        myFoods
-            .filter(
-                function(food) {
+    const db =
+        await initializeFirebase();
 
-                    return food.status ===
-                        "available";
+    if (!db) {
+        return;
+    }
 
-                }
-            )
-            .reduce(
-                function(total, food) {
+    const {
+        ref,
+        get
+    } = window.firebaseTools;
 
-                    return total +
-                        Number(
-                            food.quantity
-                        );
+    try {
 
-                },
-                0
+        const snapshot =
+            await get(ref(db, "foods"));
+
+        const foods =
+            snapshot.exists()
+                ? Object.values(snapshot.val())
+                : [];
+
+        let totalFood = 0;
+
+        foods.forEach(function(food) {
+
+            totalFood +=
+                Number(food.quantity || 0);
+        });
+
+        const totalElement =
+            document.getElementById(
+                "totalFood"
             );
 
+        if (totalElement) {
 
-    document.getElementById(
-        "providerSurplus"
-    ).textContent =
-        surplusMeals +
-        " Meals";
+            totalElement.textContent =
+                totalFood + " Meals";
+        }
 
+    } catch (error) {
+
+        console.error(
+            "Analytics error:",
+            error
+        );
+    }
 }
 
 
-// ==========================================
-// ACCEPT REQUEST
-// ==========================================
+// ============================================================
+// NOTIFICATION POPUP
+// ============================================================
 
-async function acceptRequest(
-    requestId
+function showNotificationPopup(
+    title,
+    message
 ) {
 
-    const requests =
-        await getRequests();
-
-
-    const request =
-        requests.find(
-            function(item) {
-
-                return String(
-                    item.id
-                ) ===
-                String(
-                    requestId
-                );
-
-            }
+    const oldPopup =
+        document.getElementById(
+            "smartfoodNotification"
         );
 
-
-    if (!request) {
-
-        alert(
-            "Request not found."
-        );
-
-        return;
-
+    if (oldPopup) {
+        oldPopup.remove();
     }
 
+    const popup =
+        document.createElement("div");
 
-    const foods =
-        await getFoods();
+    popup.id =
+        "smartfoodNotification";
 
+    popup.style.position =
+        "fixed";
 
-    const food =
-        foods.find(
-            function(item) {
+    popup.style.top =
+        "20px";
 
-                return String(
-                    item.id
-                ) ===
-                String(
-                    request.foodId
-                );
+    popup.style.right =
+        "20px";
 
-            }
-        );
+    popup.style.width =
+        "340px";
 
+    popup.style.padding =
+        "20px";
 
-    if (!food) {
+    popup.style.background =
+        "white";
 
-        alert(
-            "Food listing not found."
-        );
+    popup.style.borderRadius =
+        "12px";
 
-        return;
+    popup.style.boxShadow =
+        "0 8px 25px rgba(0,0,0,0.2)";
 
-    }
+    popup.style.zIndex =
+        "99999";
 
+    popup.innerHTML = `
 
-    if (
-        Number(
-            request.quantity
-        ) >
-        Number(
-            food.quantity
-        )
-    ) {
+        <div style="
+            font-size:20px;
+            font-weight:bold;
+            margin-bottom:8px;
+        ">
+            🔔 ${title}
+        </div>
 
-        alert(
-            "There is not enough food available for this request."
-        );
+        <div style="
+            font-size:15px;
+            line-height:1.5;
+        ">
+            ${message}
+        </div>
 
-        return;
+        <button
+            onclick="
+                document
+                .getElementById('smartfoodNotification')
+                .remove();
+            "
+            style="
+                margin-top:15px;
+                padding:8px 15px;
+                border:none;
+                border-radius:6px;
+                cursor:pointer;
+            "
+        >
+            Close
+        </button>
 
-    }
+    `;
 
-
-    request.status =
-        "accepted";
-
-
-    request.updatedAt =
-        Date.now();
-
-
-    await saveFirebaseData(
-        "requests/" +
-        request.id,
-        request
+    document.body.appendChild(
+        popup
     );
 
+    setTimeout(function() {
 
-    alert(
-        "Food request accepted successfully!"
-    );
+        if (
+            document.getElementById(
+                "smartfoodNotification"
+            )
+        ) {
 
+            popup.remove();
+        }
 
-    await loadProviderDashboard();
-
+    }, 8000);
 }
 
 
-// ==========================================
-// REJECT REQUEST
-// ==========================================
+// ============================================================
+// CHECK NOTIFICATIONS
+// ============================================================
 
-async function rejectRequest(
-    requestId
-) {
+async function checkNotifications() {
 
-    const requests =
-        await getRequests();
+    const currentUser =
+        getCurrentUser();
 
-
-    const request =
-        requests.find(
-            function(item) {
-
-                return String(
-                    item.id
-                ) ===
-                String(
-                    requestId
-                );
-
-            }
-        );
-
-
-    if (!request) {
-
-        alert(
-            "Request not found."
-        );
-
+    if (!currentUser) {
         return;
-
     }
 
+    const db =
+        await initializeFirebase();
 
-    request.status =
-        "rejected";
+    if (!db) {
+        return;
+    }
+
+    const {
+        ref,
+        get
+    } = window.firebaseTools;
+
+    try {
+
+        const snapshot =
+            await get(ref(db, "requests"));
+
+        if (!snapshot.exists()) {
+            return;
+        }
+
+        const requests =
+            Object.values(snapshot.val());
+
+        let shownNotifications =
+            JSON.parse(
+                localStorage.getItem(
+                    "smartfood_shownNotifications"
+                )
+            ) || [];
 
 
-    request.updatedAt =
-        Date.now();
+        // ----------------------------------------------------
+        // PROVIDER NOTIFICATIONS
+        // ----------------------------------------------------
+
+        if (currentUser.role === "provider") {
+
+            const providerRequests =
+                requests.filter(function(request) {
+
+                    return String(request.providerId) ===
+                        String(currentUser.id);
+                });
+
+            for (
+                const request of providerRequests
+            ) {
+
+                const notificationId =
+                    "provider-" +
+                    request.id +
+                    "-" +
+                    request.status;
+
+                if (
+                    shownNotifications.includes(
+                        notificationId
+                    )
+                ) {
+                    continue;
+                }
+
+                if (
+                    request.status === "pending"
+                ) {
+
+                    showNotificationPopup(
+                        "New Food Request",
+                        `${request.recipientName} requested ${request.quantity} meals from "${request.foodName}".`
+                    );
+
+                    shownNotifications.push(
+                        notificationId
+                    );
+
+                    break;
+                }
+            }
+        }
 
 
-    await saveFirebaseData(
-        "requests/" +
-        request.id,
-        request
-    );
+        // ----------------------------------------------------
+        // RECIPIENT NOTIFICATIONS
+        // ----------------------------------------------------
+
+        if (currentUser.role === "recipient") {
+
+            const recipientRequests =
+                requests.filter(function(request) {
+
+                    return String(request.recipientId) ===
+                        String(currentUser.id);
+                });
+
+            for (
+                const request of recipientRequests
+            ) {
+
+                const notificationId =
+                    "recipient-" +
+                    request.id +
+                    "-" +
+                    request.status;
+
+                if (
+                    shownNotifications.includes(
+                        notificationId
+                    )
+                ) {
+                    continue;
+                }
+
+                if (
+                    request.status === "accepted"
+                ) {
+
+                    showNotificationPopup(
+                        "Request Accepted",
+                        `Your request for ${request.quantity} meals from ${request.providerName} has been accepted.`
+                    );
+
+                    shownNotifications.push(
+                        notificationId
+                    );
+
+                    break;
+                }
+
+                if (
+                    request.status === "rejected"
+                ) {
+
+                    showNotificationPopup(
+                        "Request Rejected",
+                        `Your request for "${request.foodName}" was rejected by ${request.providerName}.`
+                    );
+
+                    shownNotifications.push(
+                        notificationId
+                    );
+
+                    break;
+                }
+
+                if (
+                    request.status === "completed"
+                ) {
+
+                    showNotificationPopup(
+                        "Donation Completed",
+                        `Your donation request for "${request.foodName}" has been completed.`
+                    );
+
+                    shownNotifications.push(
+                        notificationId
+                    );
+
+                    break;
+                }
+            }
+        }
 
 
-    alert(
-        "Food request rejected."
-    );
+        localStorage.setItem(
+            "smartfood_shownNotifications",
+            JSON.stringify(
+                shownNotifications
+            )
+        );
 
+    } catch (error) {
 
-    await loadProviderDashboard();
-
+        console.error(
+            "Notification error:",
+            error
+        );
+    }
 }
 
 
-// ==========================================
-// COMPLETE DONATION
-// ==========================================
+// ============================================================
+// START NOTIFICATION CHECKING
+// ============================================================
 
-async function completeDonation(
-    requestId
-) {
+function startNotificationChecking() {
 
-    const requests =
-        await getRequests();
+    checkNotifications();
 
-
-    const request =
-        requests.find(
-            function(item) {
-
-                return String(
-                    item.id
-                ) ===
-                String(
-                    requestId
-                );
-
-            }
-        );
-
-
-    if (!request) {
-
-        alert(
-            "Request not found."
-        );
-
-        return;
-
-    }
-
-
-    if (
-        request.status !==
-        "accepted"
-    ) {
-
-        alert(
-            "Only accepted requests can be completed."
-        );
-
-        return;
-
-    }
-
-
-    const foods =
-        await getFoods();
-
-
-    const food =
-        foods.find(
-            function(item) {
-
-                return String(
-                    item.id
-                ) ===
-                String(
-                    request.foodId
-                );
-
-            }
-        );
-
-
-    if (!food) {
-
-        alert(
-            "Food listing not found."
-        );
-
-        return;
-
-    }
-
-
-    if (
-        Number(
-            request.quantity
-        ) >
-        Number(
-            food.quantity
-        )
-    ) {
-
-        alert(
-            "There is not enough food available to complete this donation."
-        );
-
-        return;
-
-    }
-
-
-    food.quantity =
-        Number(
-            food.quantity
-        ) -
-        Number(
-            request.quantity
-        );
-
-
-    request.donatedQuantity =
-        Number(
-            request.quantity
-        );
-
-
-    request.status =
-        "completed";
-
-
-    request.updatedAt =
-        Date.now();
-
-
-    if (
-        Number(
-            food.quantity
-        ) ===
-        0
-    ) {
-
-        food.status =
-            "completed";
-
-    }
-
-
-    await saveFirebaseData(
-        "foods/" +
-        food.id,
-        food
+    setInterval(
+        checkNotifications,
+        5000
     );
-
-
-    await saveFirebaseData(
-        "requests/" +
-        request.id,
-        request
-    );
-
-
-    alert(
-        "Donation completed successfully!"
-    );
-
-
-    await loadProviderDashboard();
-
 }
 
 
-// ==========================================
-// INITIALIZE PAGES
-// ==========================================
+// ============================================================
+// PAGE LOAD
+// ============================================================
 
 document.addEventListener(
     "DOMContentLoaded",
-    async function() {
+    function() {
 
         createDefaultAdmin();
 
 
-        await firebaseReady;
+        // ----------------------------------------------------
+        // PROVIDER DASHBOARD
+        // ----------------------------------------------------
+
+        if (
+            document.getElementById(
+                "providerWelcome"
+            )
+        ) {
+
+            loadProviderDashboard();
+        }
 
 
-        await loadProviderFoods();
+        // ----------------------------------------------------
+        // RECIPIENT DASHBOARD
+        // ----------------------------------------------------
 
-        await loadAvailableFoods();
+        if (
+            document.getElementById(
+                "recipientWelcome"
+            )
+        ) {
 
-        await loadFoodDetails();
-
-        await loadRecipientDashboard();
-
-        await loadProviderDashboard();
+            loadRecipientDashboard();
+        }
 
 
-        // Start checking Firebase
-        // for new request/status notifications
+        // ----------------------------------------------------
+        // AVAILABLE FOOD
+        // ----------------------------------------------------
+
+        if (
+            document.getElementById(
+                "availableFoodList"
+            )
+        ) {
+
+            loadAvailableFood();
+        }
+
+
+        // ----------------------------------------------------
+        // FOOD DETAILS
+        // ----------------------------------------------------
+
+        if (
+            document.getElementById(
+                "foodDetails"
+            )
+        ) {
+
+            loadFoodDetails();
+        }
+
+
+        // ----------------------------------------------------
+        // ANALYTICS
+        // ----------------------------------------------------
+
+        if (
+            document.getElementById(
+                "totalFood"
+            )
+        ) {
+
+            loadAnalytics();
+        }
+
+
+        // ----------------------------------------------------
+        // WASTE TRACKER
+        // ----------------------------------------------------
+
+        const preparedInput =
+            document.getElementById(
+                "food-prepared"
+            );
+
+        const consumedInput =
+            document.getElementById(
+                "food-consumed"
+            );
+
+        const donatedInput =
+            document.getElementById(
+                "food-donated"
+            );
+
+        if (
+            preparedInput &&
+            consumedInput &&
+            donatedInput
+        ) {
+
+            preparedInput.addEventListener(
+                "input",
+                calculateWaste
+            );
+
+            consumedInput.addEventListener(
+                "input",
+                calculateWaste
+            );
+
+            donatedInput.addEventListener(
+                "input",
+                calculateWaste
+            );
+        }
+
+
+        // ----------------------------------------------------
+        // NOTIFICATIONS
+        // ----------------------------------------------------
 
         startNotificationChecking();
 
