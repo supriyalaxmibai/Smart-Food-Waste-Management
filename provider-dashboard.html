@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Provider Dashboard | SmartFood</title>
+
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+
+    <!-- Navigation -->
+    <header class="navbar">
+
+        <div class="logo">
+            <span>♻</span>
+            SmartFood
+        </div>
+
+        <nav>
+            <a href="provider-dashboard.html">Dashboard</a>
+            <a href="add-food.html">Add Food</a>
+            <a href="waste-tracker.html">Waste Tracker</a>
+            <a href="analytics.html">Analytics</a>
+        </nav>
+
+        <div class="nav-buttons">
+            <a href="index.html" class="login-btn">Logout</a>
+        </div>
+
+    </header>
+
+
+    <!-- Dashboard -->
+    <main class="dashboard">
+
+        <!-- Welcome -->
+        <section class="dashboard-header">
+
+            <div>
+                <span class="dashboard-label">
+                    FOOD PROVIDER
+                </span>
+
+                <h1 id="providerWelcome">
+                    Welcome back, Provider! 👋
+                </h1>
+
+                <p>
+                    Manage your surplus food, donations and waste reduction.
+                </p>
+            </div>
+
+            <a href="add-food.html" class="dashboard-primary-btn">
+                + Add Surplus Food
+            </a>
+
+        </section>
+
+
+        <!-- Statistics -->
+        <section class="dashboard-stats">
+
+            <div class="dashboard-stat-card">
+
+                <div class="stat-icon">
+                    🍱
+                </div>
+
+                <div>
+                    <span>Total Prepared</span>
+                    <h2>500 Meals</h2>
+                </div>
+
+            </div>
+
+
+            <div class="dashboard-stat-card">
+
+                <div class="stat-icon">
+                    📦
+                </div>
+
+                <div>
+                    <span>Surplus Food</span>
+                    <h2 id="providerSurplus">0 Meals</h2>
+                </div>
+
+            </div>
+
+
+            <div class="dashboard-stat-card">
+
+                <div class="stat-icon">
+                    ❤️
+                </div>
+
+                <div>
+                    <span>Food Donated</span>
+                    <h2 id="providerDonated">0 Meals</h2>
+                </div>
+
+            </div>
+
+
+            <div class="dashboard-stat-card">
+
+                <div class="stat-icon">
+                    🗑️
+                </div>
+
+                <div>
+                    <span>Food Wasted</span>
+                    <h2>20 Meals</h2>
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- Main Dashboard Grid -->
+        <section class="dashboard-grid">
+
+
+            <!-- Surplus Food -->
+            <div class="dashboard-panel">
+
+                <div class="panel-header">
+
+                    <div>
+                        <h2>My Surplus Food</h2>
+
+                        <p>
+                            Food currently available for donation
+                        </p>
+                    </div>
+
+                    <a href="add-food.html">
+                        + Add New
+                    </a>
+
+                </div>
+
+
+                <div class="food-list" id="foodList">
+
+                    <p style="padding: 20px;">
+                        Loading food listings...
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <!-- Donation Requests -->
+            <div class="dashboard-panel">
+
+                <div class="panel-header">
+
+                    <div>
+                        <h2>Donation Requests</h2>
+
+                        <p>
+                            Requests from recipients
+                        </p>
+                    </div>
+
+                    <span class="request-count" id="providerRequestCount">
+                        0 New
+                    </span>
+
+                </div>
+
+
+                <div class="request-list" id="providerRequestList">
+
+                    <p style="padding: 20px;">
+                        No donation requests yet.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- Waste Reduction -->
+        <section class="impact-panel">
+
+            <div class="impact-content">
+
+                <span class="dashboard-label">
+                    WASTE REDUCTION
+                </span>
+
+                <h2>
+                    Your Food Waste Overview
+                </h2>
+
+                <p>
+                    Manage your surplus food and redirect available
+                    meals to recipients instead of allowing them to go to waste.
+                </p>
+
+            </div>
+
+
+            <div class="impact-circle">
+
+                <strong>
+                    75%
+                </strong>
+
+                <span>
+                    Waste Reduction
+                </span>
+
+            </div>
+
+
+            <div class="impact-details">
+
+                <div>
+                    <span>Prepared</span>
+                    <strong>500</strong>
+                </div>
+
+                <div>
+                    <span>Consumed</span>
+                    <strong>420</strong>
+                </div>
+
+                <div>
+                    <span>Donated</span>
+                    <strong id="impactDonated">0</strong>
+                </div>
+
+                <div>
+                    <span>Wasted</span>
+                    <strong>20</strong>
+                </div>
+
+            </div>
+
+        </section>
+
+    </main>
+
+
+    <!-- Footer -->
+    <footer>
+
+        <div class="copyright">
+            © 2026 Smart Food Waste Reduction and Surplus Food Management System
+        </div>
+
+    </footer>
+
+
+    <script src="js/script.js"></script>
+
+</body>
+
+</html>

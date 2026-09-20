@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Add Surplus Food | SmartFood</title>
+
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+
+    <!-- Navigation -->
+    <header class="navbar">
+
+        <div class="logo">
+            <span>♻</span>
+            SmartFood
+        </div>
+
+        <nav>
+            <a href="provider-dashboard.html">Dashboard</a>
+            <a href="add-food.html">Add Food</a>
+            <a href="waste-tracker.html">Waste Tracker</a>
+            <a href="analytics.html">Analytics</a>
+        </nav>
+
+        <div class="nav-buttons">
+            <a href="index.html" class="login-btn">Logout</a>
+        </div>
+
+    </header>
+
+
+    <!-- Add Food Section -->
+    <main class="add-food-page">
+
+        <div class="add-food-container">
+
+            <!-- Page Header -->
+            <div class="add-food-header">
+
+                <a href="provider-dashboard.html" class="back-link">
+                    ← Back to Dashboard
+                </a>
+
+                <span class="dashboard-label">
+                    FOOD PROVIDER
+                </span>
+
+                <h1>Add Surplus Food</h1>
+
+                <p>
+                    Share your surplus food with organizations that can make use of it.
+                </p>
+
+            </div>
+
+
+            <!-- Food Form -->
+            <form class="food-form" onsubmit="addFood(); return false;">
+
+                <div class="form-section">
+
+                    <h2>Food Information</h2>
+
+                    <p>
+                        Provide details about the surplus food available for donation.
+                    </p>
+
+                </div>
+
+
+                <!-- Food Name -->
+                <div class="form-group">
+
+                    <label for="food-name">
+                        Food Name
+                    </label>
+
+                    <input
+                        type="text"
+                        id="food-name"
+                        placeholder="Example: Vegetable Rice"
+                        required
+                    >
+
+                </div>
+
+
+                <!-- Food Type -->
+                <div class="form-row">
+
+                    <div class="form-group">
+
+                        <label for="food-type">
+                            Food Type
+                        </label>
+
+                        <select id="food-type" required>
+
+                            <option value="">
+                                Select food type
+                            </option>
+
+                            <option value="rice">
+                                Rice / Meals
+                            </option>
+
+                            <option value="curry">
+                                Curry / Vegetables
+                            </option>
+
+                            <option value="bread">
+                                Bread / Bakery
+                            </option>
+
+                            <option value="fruits">
+                                Fruits
+                            </option>
+
+                            <option value="snacks">
+                                Snacks
+                            </option>
+
+                            <option value="other">
+                                Other
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label for="quantity">
+                            Quantity
+                        </label>
+
+                        <input
+                            type="number"
+                            id="quantity"
+                            min="1"
+                            placeholder="Number of meals / portions"
+                            required
+                        >
+
+                    </div>
+
+                </div>
+
+
+                <!-- Availability -->
+                <div class="form-section small-section">
+
+                    <h2>Availability Details</h2>
+
+                </div>
+
+
+                <div class="form-row">
+
+                    <div class="form-group">
+
+                        <label for="available-from">
+                            Available From
+                        </label>
+
+                        <input
+                            type="time"
+                            id="available-from"
+                            required
+                        >
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label for="available-until">
+                            Available Until
+                        </label>
+
+                        <input
+                            type="time"
+                            id="available-until"
+                            required
+                        >
+
+                    </div>
+
+                </div>
+
+
+                <!-- Location -->
+                <div class="form-group">
+
+                    <label for="food-location">
+                        Pickup Location
+                    </label>
+
+                    <input
+                        type="text"
+                        id="food-location"
+                        placeholder="Example: Hyderabad, Telangana"
+                        required
+                    >
+
+                </div>
+
+
+                <!-- Recipient Requirement -->
+                <div class="form-group">
+
+                    <label for="recipient-type">
+                        Preferred Recipient
+                    </label>
+
+                    <select id="recipient-type">
+
+                        <option value="any">
+                            Any eligible recipient
+                        </option>
+
+                        <option value="ngo">
+                            NGO / Charity
+                        </option>
+
+                        <option value="community">
+                            Community Organization
+                        </option>
+
+                        <option value="shelter">
+                            Shelter / Support Center
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <!-- Description -->
+                <div class="form-group">
+
+                    <label for="description">
+                        Additional Information
+                    </label>
+
+                    <textarea
+                        id="description"
+                        rows="5"
+                        placeholder="Add information about the food, ingredients, packaging, pickup instructions, etc."
+                    ></textarea>
+
+                </div>
+
+
+                <!-- Smart Matching -->
+                <div class="smart-info">
+
+                    <div class="smart-info-icon">
+                        ✨
+                    </div>
+
+                    <div>
+
+                        <h3>Smart Matching</h3>
+
+                        <p>
+                            After you publish this listing, SmartFood can identify
+                            suitable recipients based on food type, quantity,
+                            location and availability time.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <!-- Buttons -->
+                <div class="form-actions">
+
+                    <a
+                        href="provider-dashboard.html"
+                        class="cancel-btn"
+                    >
+                        Cancel
+                    </a>
+
+                    <button
+                        type="submit"
+                        class="publish-btn"
+                    >
+                        Publish Surplus Food →
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </main>
+
+
+    <!-- Footer -->
+    <footer>
+
+        <div class="copyright">
+            © 2026 Smart Food Waste Reduction and Surplus Food Management System
+        </div>
+
+        </footer>
+
+    <script src="js/script.js"></script>
+
+</body>
+
+</html>

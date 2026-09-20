@@ -1,0 +1,1105 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Analytics | SmartFood</title>
+
+    <link rel="stylesheet" href="css/style.css">
+
+</head>
+
+
+<body>
+
+    <!-- Navigation Bar -->
+
+    <header class="navbar">
+
+        <div class="logo">
+            <span>♻</span>
+            SmartFood
+        </div>
+
+        <nav>
+
+            <a href="provider-dashboard.html">
+                Dashboard
+            </a>
+
+            <a href="add-food.html">
+                Add Food
+            </a>
+
+            <a href="waste-tracker.html">
+                Waste Tracker
+            </a>
+
+            <a href="analytics.html">
+                Analytics
+            </a>
+
+        </nav>
+
+        <div class="nav-buttons">
+
+            <a href="index.html" class="login-btn">
+                Logout
+            </a>
+
+        </div>
+
+    </header>
+
+
+    <!-- Analytics Page -->
+
+    <main class="analytics-page">
+
+
+        <!-- Header -->
+
+        <section class="analytics-header">
+
+            <div>
+
+                <span class="dashboard-label">
+                    DATA & INSIGHTS
+                </span>
+
+                <h1>
+                    Food Waste Analytics
+                </h1>
+
+                <p>
+                    Monitor food usage, donations and waste
+                    reduction through data-driven insights.
+                </p>
+
+            </div>
+
+
+            <div class="analytics-period">
+
+                <span>
+                    Analysis Period
+                </span>
+
+                <strong>
+                    Current Data
+                </strong>
+
+            </div>
+
+        </section>
+
+
+        <!-- Summary Cards -->
+
+        <section class="analytics-summary">
+
+
+            <!-- Food Prepared -->
+
+            <div class="analytics-card">
+
+                <div class="analytics-card-icon">
+                    🍳
+                </div>
+
+                <div>
+
+                    <span>
+                        Food Prepared
+                    </span>
+
+                    <h2 id="analyticsPrepared">
+                        0
+                    </h2>
+
+                    <small>
+                        Meals
+                    </small>
+
+                </div>
+
+            </div>
+
+
+            <!-- Food Consumed -->
+
+            <div class="analytics-card">
+
+                <div class="analytics-card-icon">
+                    🍽️
+                </div>
+
+                <div>
+
+                    <span>
+                        Food Consumed
+                    </span>
+
+                    <h2 id="analyticsConsumed">
+                        0
+                    </h2>
+
+                    <small>
+                        Meals
+                    </small>
+
+                </div>
+
+            </div>
+
+
+            <!-- Food Donated -->
+
+            <div class="analytics-card">
+
+                <div class="analytics-card-icon">
+                    ❤️
+                </div>
+
+                <div>
+
+                    <span>
+                        Food Donated
+                    </span>
+
+                    <h2 id="analyticsDonated">
+                        0
+                    </h2>
+
+                    <small>
+                        Meals
+                    </small>
+
+                </div>
+
+            </div>
+
+
+            <!-- Food Wasted -->
+
+            <div class="analytics-card">
+
+                <div class="analytics-card-icon">
+                    ♻
+                </div>
+
+                <div>
+
+                    <span>
+                        Food Wasted
+                    </span>
+
+                    <h2 id="analyticsWasted">
+                        0
+                    </h2>
+
+                    <small>
+                        Meals
+                    </small>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- Main Analytics Grid -->
+
+        <section class="analytics-grid">
+
+
+            <!-- Donation vs Waste -->
+
+            <div class="analytics-panel">
+
+                <div class="analytics-panel-header">
+
+                    <div>
+
+                        <h2>
+                            Donation vs Waste
+                        </h2>
+
+                        <p>
+                            Current food donation and waste
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="bar-chart">
+
+
+                    <!-- Donated -->
+
+                    <div class="chart-item">
+
+                        <div class="chart-label">
+
+                            <span>
+                                Donated
+                            </span>
+
+                            <strong id="chartDonated">
+                                0
+                            </strong>
+
+                        </div>
+
+                        <div class="chart-track">
+
+                            <div
+                                class="chart-bar donation-bar"
+                                id="donationBar"
+                                style="width: 0%;">
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- Remaining -->
+
+                    <div class="chart-item">
+
+                        <div class="chart-label">
+
+                            <span>
+                                Remaining
+                            </span>
+
+                            <strong id="chartRemaining">
+                                0
+                            </strong>
+
+                        </div>
+
+                        <div class="chart-track">
+
+                            <div
+                                class="chart-bar donation-bar"
+                                id="remainingBar"
+                                style="width: 0%;">
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- Wasted -->
+
+                    <div class="chart-item">
+
+                        <div class="chart-label">
+
+                            <span>
+                                Wasted
+                            </span>
+
+                            <strong id="chartWasted">
+                                0
+                            </strong>
+
+                        </div>
+
+                        <div class="chart-track">
+
+                            <div
+                                class="chart-bar donation-bar"
+                                id="wastedBar"
+                                style="width: 0%;">
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                </div>
+
+            </div>
+
+
+            <!-- Food Distribution -->
+
+            <div class="analytics-panel">
+
+                <div class="analytics-panel-header">
+
+                    <div>
+
+                        <h2>
+                            Food Distribution
+                        </h2>
+
+                        <p>
+                            Overall food usage
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="distribution">
+
+                    <div class="distribution-circle">
+
+                        <div>
+
+                            <strong id="utilizedPercentage">
+                                0%
+                            </strong>
+
+                            <span>
+                                Utilized
+                            </span>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="distribution-legend">
+
+
+                        <!-- Consumed -->
+
+                        <div>
+
+                            <span
+                                class="legend-dot consumed-dot">
+                            </span>
+
+                            <p>
+                                Consumed
+                            </p>
+
+                            <strong id="consumedPercentage">
+                                0%
+                            </strong>
+
+                        </div>
+
+
+                        <!-- Donated -->
+
+                        <div>
+
+                            <span
+                                class="legend-dot donated-dot">
+                            </span>
+
+                            <p>
+                                Donated
+                            </p>
+
+                            <strong id="donatedPercentage">
+                                0%
+                            </strong>
+
+                        </div>
+
+
+                        <!-- Wasted -->
+
+                        <div>
+
+                            <span
+                                class="legend-dot wasted-dot">
+                            </span>
+
+                            <p>
+                                Wasted
+                            </p>
+
+                            <strong id="wastedPercentage">
+                                0%
+                            </strong>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+        </section>
+
+
+        <!-- Impact Section -->
+
+        <section class="analytics-impact">
+
+            <div>
+
+                <span>
+                    ENVIRONMENTAL & SOCIAL IMPACT
+                </span>
+
+                <h2>
+                    Your Contribution
+                </h2>
+
+                <p>
+                    Tracking surplus food helps identify
+                    opportunities to reduce waste and increase
+                    food donation.
+                </p>
+
+            </div>
+
+
+            <!-- Meals Redirected -->
+
+            <div class="impact-stat">
+
+                <strong id="impactDonatedMeals">
+                    0
+                </strong>
+
+                <span>
+                    Meals redirected
+                    from waste
+                </span>
+
+            </div>
+
+
+            <!-- Donation Percentage -->
+
+            <div class="impact-stat">
+
+                <strong id="impactDonationPercentage">
+                    0%
+                </strong>
+
+                <span>
+                    Food redirected
+                    for donation
+                </span>
+
+            </div>
+
+
+            <!-- Waste -->
+
+            <div class="impact-stat">
+
+                <strong id="impactWastedMeals">
+                    0
+                </strong>
+
+                <span>
+                    Meals recorded
+                    as waste
+                </span>
+
+            </div>
+
+        </section>
+
+
+        <!-- Smart Recommendations -->
+
+        <section class="analytics-recommendations">
+
+            <div class="section-title-left">
+
+                <span>
+                    SMART INSIGHTS
+                </span>
+
+                <h2>
+                    Recommendations
+                </h2>
+
+            </div>
+
+
+            <div class="recommendation-grid">
+
+
+                <div class="analytics-recommendation">
+
+                    <div class="recommendation-icon">
+                        💡
+                    </div>
+
+                    <div>
+
+                        <h3>
+                            Donate surplus earlier
+                        </h3>
+
+                        <p>
+                            Listing surplus food earlier can
+                            provide more time for recipients to
+                            arrange pickup.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="analytics-recommendation">
+
+                    <div class="recommendation-icon">
+                        📊
+                    </div>
+
+                    <div>
+
+                        <h3>
+                            Monitor weekly waste
+                        </h3>
+
+                        <p>
+                            Compare food records to identify
+                            periods with higher surplus.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="analytics-recommendation">
+
+                    <div class="recommendation-icon">
+                        🤝
+                    </div>
+
+                    <div>
+
+                        <h3>
+                            Increase food donation
+                        </h3>
+
+                        <p>
+                            Connect available surplus with
+                            suitable recipients before food expires.
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+    </main>
+
+
+    <!-- Footer -->
+
+    <footer>
+
+        <div class="footer-content">
+
+            <div>
+
+                <h3>
+                    ♻ SmartFood
+                </h3>
+
+                <p>
+                    Smart food management for a sustainable future.
+                </p>
+
+            </div>
+
+            <div class="footer-links">
+
+                <a href="index.html">
+                    Home
+                </a>
+
+                <a href="provider-dashboard.html">
+                    Dashboard
+                </a>
+
+                <a href="waste-tracker.html">
+                    Waste Tracker
+                </a>
+
+            </div>
+
+        </div>
+
+        <div class="copyright">
+
+            © 2026 Smart Food Waste Reduction and
+            Surplus Food Management System
+
+        </div>
+
+    </footer>
+
+
+    <!-- Dynamic Analytics JavaScript -->
+
+    <script>
+
+        function loadAnalytics() {
+
+            /* =========================================
+               GET WASTE TRACKER DATA
+            ========================================= */
+
+            const savedWasteData =
+                localStorage.getItem("smartfood_wasteData");
+
+
+            let wasteData = null;
+
+
+            if (savedWasteData) {
+
+                try {
+
+                    wasteData =
+                        JSON.parse(savedWasteData);
+
+                }
+
+                catch (error) {
+
+                    wasteData = null;
+
+                }
+
+            }
+
+
+            /* =========================================
+               GET FOOD AND REQUEST DATA
+            ========================================= */
+
+            const foods =
+                JSON.parse(
+                    localStorage.getItem("smartfood_foods")
+                ) || [];
+
+
+            const requests =
+                JSON.parse(
+                    localStorage.getItem("smartfood_requests")
+                ) || [];
+
+
+            /* =========================================
+               DONATED MEALS FROM REQUESTS
+            ========================================= */
+
+            let requestDonatedMeals = 0;
+
+
+            requests.forEach(function(request) {
+
+                const status =
+                    String(
+                        request.status || ""
+                    ).toLowerCase();
+
+
+                const donatedQuantity =
+                    Number(
+                        request.donatedQuantity || 0
+                    );
+
+
+                if (
+                    status === "completed" ||
+                    status === "received" ||
+                    donatedQuantity > 0
+                ) {
+
+                    if (donatedQuantity > 0) {
+
+                        requestDonatedMeals +=
+                            donatedQuantity;
+
+                    }
+
+                    else {
+
+                        requestDonatedMeals +=
+                            Number(
+                                request.quantity || 0
+                            );
+
+                    }
+
+                }
+
+            });
+
+
+            /* =========================================
+               FINAL ANALYTICS VALUES
+            ========================================= */
+
+            let preparedMeals = 0;
+            let consumedMeals = 0;
+            let donatedMeals = 0;
+            let wastedMeals = 0;
+
+
+            /*
+             * If Waste Tracker data exists,
+             * use the actual values entered there.
+             */
+
+            if (wasteData) {
+
+                preparedMeals =
+                    Number(
+                        wasteData.prepared || 0
+                    );
+
+
+                consumedMeals =
+                    Number(
+                        wasteData.consumed || 0
+                    );
+
+
+                donatedMeals =
+                    Number(
+                        wasteData.donated || 0
+                    );
+
+
+                wastedMeals =
+                    Number(
+                        wasteData.wasted || 0
+                    );
+
+            }
+
+            else {
+
+                /*
+                 * Fallback when Waste Tracker has
+                 * not been used yet.
+                 */
+
+                let remainingMeals = 0;
+
+
+                foods.forEach(function(food) {
+
+                    remainingMeals +=
+                        Number(food.quantity) || 0;
+
+                });
+
+
+                donatedMeals =
+                    requestDonatedMeals;
+
+
+                preparedMeals =
+                    donatedMeals +
+                    remainingMeals;
+
+
+                consumedMeals = 0;
+
+
+                wastedMeals =
+                    preparedMeals -
+                    consumedMeals -
+                    donatedMeals;
+
+
+                if (wastedMeals < 0) {
+
+                    wastedMeals = 0;
+
+                }
+
+            }
+
+
+            /* =========================================
+               REMAINING FOOD
+            ========================================= */
+
+            /*
+             * Remaining means food that is currently
+             * still available in the food listings.
+             */
+
+            let remainingMeals = 0;
+
+
+            foods.forEach(function(food) {
+
+                remainingMeals +=
+                    Number(food.quantity) || 0;
+
+            });
+
+
+            /*
+             * Prevent negative remaining values.
+             */
+
+            if (remainingMeals < 0) {
+
+                remainingMeals = 0;
+
+            }
+
+
+            /* =========================================
+               UPDATE SUMMARY CARDS
+            ========================================= */
+
+            document.getElementById(
+                "analyticsPrepared"
+            ).textContent =
+                preparedMeals;
+
+
+            document.getElementById(
+                "analyticsConsumed"
+            ).textContent =
+                consumedMeals;
+
+
+            document.getElementById(
+                "analyticsDonated"
+            ).textContent =
+                donatedMeals;
+
+
+            document.getElementById(
+                "analyticsWasted"
+            ).textContent =
+                wastedMeals;
+
+
+            /* =========================================
+               DONATION VS WASTE CHART
+            ========================================= */
+
+            document.getElementById(
+                "chartDonated"
+            ).textContent =
+                donatedMeals;
+
+
+            document.getElementById(
+                "chartRemaining"
+            ).textContent =
+                remainingMeals;
+
+
+            document.getElementById(
+                "chartWasted"
+            ).textContent =
+                wastedMeals;
+
+
+            /*
+             * Chart total uses the three displayed
+             * categories.
+             */
+
+            const chartTotal =
+                donatedMeals +
+                remainingMeals +
+                wastedMeals;
+
+
+            let donatedWidth = 0;
+            let remainingWidth = 0;
+            let wastedWidth = 0;
+
+
+            if (chartTotal > 0) {
+
+                donatedWidth =
+                    (donatedMeals /
+                        chartTotal) * 100;
+
+
+                remainingWidth =
+                    (remainingMeals /
+                        chartTotal) * 100;
+
+
+                wastedWidth =
+                    (wastedMeals /
+                        chartTotal) * 100;
+
+            }
+
+
+            document.getElementById(
+                "donationBar"
+            ).style.width =
+                donatedWidth + "%";
+
+
+            document.getElementById(
+                "remainingBar"
+            ).style.width =
+                remainingWidth + "%";
+
+
+            document.getElementById(
+                "wastedBar"
+            ).style.width =
+                wastedWidth + "%";
+
+
+            /* =========================================
+               FOOD DISTRIBUTION
+            ========================================= */
+
+            /*
+             * Distribution is based on the actual
+             * prepared-food record.
+             */
+
+            const distributionTotal =
+                preparedMeals;
+
+
+            let consumedPercentage = 0;
+            let donatedPercentage = 0;
+            let wastedPercentage = 0;
+            let utilizedPercentage = 0;
+
+
+            if (distributionTotal > 0) {
+
+                consumedPercentage =
+                    Math.round(
+                        (consumedMeals /
+                            distributionTotal) * 100
+                    );
+
+
+                donatedPercentage =
+                    Math.round(
+                        (donatedMeals /
+                            distributionTotal) * 100
+                    );
+
+
+                wastedPercentage =
+                    Math.round(
+                        (wastedMeals /
+                            distributionTotal) * 100
+                    );
+
+
+                /*
+                 * Utilized means food that was
+                 * consumed or donated.
+                 */
+
+                utilizedPercentage =
+                    consumedPercentage +
+                    donatedPercentage;
+
+            }
+
+
+            /* =========================================
+               UPDATE DISTRIBUTION
+            ========================================= */
+
+            document.getElementById(
+                "consumedPercentage"
+            ).textContent =
+                consumedPercentage + "%";
+
+
+            document.getElementById(
+                "donatedPercentage"
+            ).textContent =
+                donatedPercentage + "%";
+
+
+            document.getElementById(
+                "wastedPercentage"
+            ).textContent =
+                wastedPercentage + "%";
+
+
+            document.getElementById(
+                "utilizedPercentage"
+            ).textContent =
+                utilizedPercentage + "%";
+
+
+            /* =========================================
+               IMPACT SECTION
+            ========================================= */
+
+            document.getElementById(
+                "impactDonatedMeals"
+            ).textContent =
+                donatedMeals;
+
+
+            document.getElementById(
+                "impactDonationPercentage"
+            ).textContent =
+                donatedPercentage + "%";
+
+
+            document.getElementById(
+                "impactWastedMeals"
+            ).textContent =
+                wastedMeals;
+
+        }
+
+
+        /* =========================================
+           LOAD ANALYTICS WHEN PAGE OPENS
+        ========================================= */
+
+        document.addEventListener(
+            "DOMContentLoaded",
+            function() {
+
+                loadAnalytics();
+
+            }
+        );
+
+    </script>
+
+
+</body>
+
+</html>

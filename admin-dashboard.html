@@ -1,0 +1,1238 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Admin Dashboard | SmartFood</title>
+
+    <link rel="stylesheet" href="css/style.css">
+
+</head>
+
+
+<body>
+
+    <!-- Navigation Bar -->
+
+    <header class="navbar">
+
+        <div class="logo">
+            <span>♻</span>
+            SmartFood
+        </div>
+
+        <nav>
+
+            <a href="admin-dashboard.html">
+                Dashboard
+            </a>
+
+            <a href="#users">
+                Users
+            </a>
+
+            <a href="#foodListings">
+                Food Listings
+            </a>
+
+            <a href="#donations">
+                Donations
+            </a>
+
+        </nav>
+
+        <div class="nav-buttons">
+
+            <a href="index.html" class="login-btn">
+                Logout
+            </a>
+
+        </div>
+
+    </header>
+
+
+    <!-- Admin Dashboard -->
+
+    <main class="admin-page">
+
+
+        <!-- Header -->
+
+        <section class="admin-header">
+
+            <div>
+
+                <span class="dashboard-label">
+                    SYSTEM ADMINISTRATION
+                </span>
+
+                <h1>
+                    Admin Dashboard
+                </h1>
+
+                <p>
+                    Monitor users, food listings, donations
+                    and overall platform activity.
+                </p>
+
+            </div>
+
+
+            <div class="admin-status">
+
+                <span class="status-dot"></span>
+
+                System Active
+
+            </div>
+
+        </section>
+
+
+        <!-- Statistics -->
+
+        <section class="admin-stats">
+
+
+            <!-- Total Users -->
+
+            <div class="admin-stat-card">
+
+                <div class="admin-stat-icon">
+                    👥
+                </div>
+
+                <div>
+
+                    <span>
+                        Total Users
+                    </span>
+
+                    <h2 id="adminTotalUsers">
+                        0
+                    </h2>
+
+                    <small>
+                        Providers + Recipients
+                    </small>
+
+                </div>
+
+            </div>
+
+
+            <!-- Food Listings -->
+
+            <div class="admin-stat-card">
+
+                <div class="admin-stat-icon">
+                    🍱
+                </div>
+
+                <div>
+
+                    <span>
+                        Food Listings
+                    </span>
+
+                    <h2 id="adminFoodListings">
+                        0
+                    </h2>
+
+                    <small>
+                        Total listings
+                    </small>
+
+                </div>
+
+            </div>
+
+
+            <!-- Donations -->
+
+            <div class="admin-stat-card">
+
+                <div class="admin-stat-icon">
+                    ❤️
+                </div>
+
+                <div>
+
+                    <span>
+                        Donations
+                    </span>
+
+                    <h2 id="adminDonations">
+                        0
+                    </h2>
+
+                    <small>
+                        Meals donated
+                    </small>
+
+                </div>
+
+            </div>
+
+
+            <!-- Waste Reduced -->
+
+            <div class="admin-stat-card">
+
+                <div class="admin-stat-icon">
+                    ♻
+                </div>
+
+                <div>
+
+                    <span>
+                        Waste Reduced
+                    </span>
+
+                    <h2 id="adminWasteReduced">
+                        0
+                    </h2>
+
+                    <small>
+                        Meals redirected
+                    </small>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- Main Dashboard Grid -->
+
+        <section class="admin-grid">
+
+
+            <!-- Recent Food Listings -->
+
+            <div class="admin-panel" id="foodListings">
+
+                <div class="admin-panel-header">
+
+                    <div>
+
+                        <h2>
+                            Recent Food Listings
+                        </h2>
+
+                        <p>
+                            Latest surplus food added
+                        </p>
+
+                    </div>
+
+                    <a href="available-food.html">
+                        View All
+                    </a>
+
+                </div>
+
+
+                <div id="adminFoodList">
+
+                    <p style="padding: 20px;">
+                        Loading food listings...
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <!-- User Overview -->
+
+            <div class="admin-panel" id="users">
+
+                <div class="admin-panel-header">
+
+                    <div>
+
+                        <h2>
+                            User Overview
+                        </h2>
+
+                        <p>
+                            Registered platform users
+                        </p>
+
+                    </div>
+
+                    <span>
+                        Live Data
+                    </span>
+
+                </div>
+
+
+                <div class="user-overview">
+
+
+                    <!-- Providers -->
+
+                    <div class="user-type-card">
+
+                        <div class="user-type-icon">
+                            🏪
+                        </div>
+
+                        <div>
+
+                            <strong id="adminProviders">
+                                0
+                            </strong>
+
+                            <span>
+                                Food Providers
+                            </span>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- Recipients -->
+
+                    <div class="user-type-card">
+
+                        <div class="user-type-icon">
+                            🤝
+                        </div>
+
+                        <div>
+
+                            <strong id="adminRecipients">
+                                0
+                            </strong>
+
+                            <span>
+                                Recipients
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <div class="admin-progress">
+
+                    <div class="progress-header">
+
+                        <span>
+                            Provider / Recipient Ratio
+                        </span>
+
+                        <strong id="adminRatio">
+                            0% / 0%
+                        </strong>
+
+                    </div>
+
+                    <div class="progress-track">
+
+                        <div
+                            class="progress-fill"
+                            id="adminProgressFill"
+                            style="width: 0%;">
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+        </section>
+
+
+        <!-- Requests and Impact -->
+
+        <section class="admin-bottom-grid">
+
+
+            <!-- Recent Requests -->
+
+            <div class="admin-panel" id="donations">
+
+                <div class="admin-panel-header">
+
+                    <div>
+
+                        <h2>
+                            Recent Requests
+                        </h2>
+
+                        <p>
+                            Latest food donation requests
+                        </p>
+
+                    </div>
+
+                    <span>
+                        Live Data
+                    </span>
+
+                </div>
+
+
+                <div
+                    class="request-table"
+                    id="adminRequestTable">
+
+                    <div class="request-row request-heading">
+
+                        <span>
+                            Recipient
+                        </span>
+
+                        <span>
+                            Food
+                        </span>
+
+                        <span>
+                            Quantity
+                        </span>
+
+                        <span>
+                            Status
+                        </span>
+
+                    </div>
+
+
+                    <div style="padding: 20px;">
+
+                        Loading requests...
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- Platform Impact -->
+
+            <div class="admin-panel admin-impact-panel">
+
+                <div class="admin-panel-header">
+
+                    <div>
+
+                        <h2>
+                            Platform Impact
+                        </h2>
+
+                        <p>
+                            Overall system contribution
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="admin-impact-number">
+
+                    <strong id="adminImpactMeals">
+                        0
+                    </strong>
+
+                    <span>
+                        Meals saved from waste
+                    </span>
+
+                </div>
+
+
+                <div class="admin-impact-bar">
+
+                    <div
+                        class="impact-bar-fill"
+                        id="adminImpactBar"
+                        style="width: 0%;">
+                    </div>
+
+                </div>
+
+
+                <div class="admin-impact-details">
+
+                    <div>
+
+                        <strong id="adminImpactDonated">
+                            0
+                        </strong>
+
+                        <span>
+                            Donated
+                        </span>
+
+                    </div>
+
+
+                    <div>
+
+                        <strong id="adminImpactRemaining">
+                            0
+                        </strong>
+
+                        <span>
+                            Other surplus handled
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+                <a
+                    href="analytics.html"
+                    class="admin-analytics-btn">
+
+                    View Detailed Analytics →
+
+                </a>
+
+            </div>
+
+        </section>
+
+
+        <!-- System Features -->
+
+        <section class="admin-features">
+
+            <div class="section-title-left">
+
+                <span>
+                    SYSTEM MANAGEMENT
+                </span>
+
+                <h2>
+                    Administration Tools
+                </h2>
+
+            </div>
+
+
+            <div class="admin-feature-grid">
+
+
+                <div class="admin-feature-card">
+
+                    <div>
+                        👥
+                    </div>
+
+                    <h3>
+                        Manage Users
+                    </h3>
+
+                    <p>
+                        View and manage registered food
+                        providers and recipient organizations.
+                    </p>
+
+                </div>
+
+
+                <div class="admin-feature-card">
+
+                    <div>
+                        🍱
+                    </div>
+
+                    <h3>
+                        Monitor Food
+                    </h3>
+
+                    <p>
+                        Monitor surplus food listings and
+                        their availability status.
+                    </p>
+
+                </div>
+
+
+                <div class="admin-feature-card">
+
+                    <div>
+                        🤝
+                    </div>
+
+                    <h3>
+                        Track Donations
+                    </h3>
+
+                    <p>
+                        Monitor requests, accepted donations
+                        and completed pickups.
+                    </p>
+
+                </div>
+
+
+                <div class="admin-feature-card">
+
+                    <div>
+                        📊
+                    </div>
+
+                    <h3>
+                        View Analytics
+                    </h3>
+
+                    <p>
+                        Analyze platform activity and
+                        food waste reduction.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+    </main>
+
+
+    <!-- Footer -->
+
+    <footer>
+
+        <div class="footer-content">
+
+            <div>
+
+                <h3>
+                    ♻ SmartFood
+                </h3>
+
+                <p>
+                    Smart food management for a sustainable future.
+                </p>
+
+            </div>
+
+            <div class="footer-links">
+
+                <a href="index.html">
+                    Home
+                </a>
+
+                <a href="analytics.html">
+                    Analytics
+                </a>
+
+                <a href="index.html">
+                    Logout
+                </a>
+
+            </div>
+
+        </div>
+
+        <div class="copyright">
+
+            © 2026 Smart Food Waste Reduction and
+            Surplus Food Management System
+
+        </div>
+
+    </footer>
+
+
+    <!-- Admin Dashboard JavaScript -->
+
+    <script>
+
+        function loadAdminDashboard() {
+
+            /* Get stored data */
+
+            const users =
+                JSON.parse(
+                    localStorage.getItem("smartfood_users")
+                ) || [];
+
+
+            const foods =
+                JSON.parse(
+                    localStorage.getItem("smartfood_foods")
+                ) || [];
+
+
+            const requests =
+                JSON.parse(
+                    localStorage.getItem("smartfood_requests")
+                ) || [];
+
+
+            /* ================================
+               USER STATISTICS
+            ================================= */
+
+            const providers =
+                users.filter(function(user) {
+
+                    return user.role === "provider";
+
+                });
+
+
+            const recipients =
+                users.filter(function(user) {
+
+                    return user.role === "recipient";
+
+                });
+
+
+            document.getElementById(
+                "adminTotalUsers"
+            ).textContent =
+                users.length;
+
+
+            document.getElementById(
+                "adminProviders"
+            ).textContent =
+                providers.length;
+
+
+            document.getElementById(
+                "adminRecipients"
+            ).textContent =
+                recipients.length;
+
+
+            /* Provider / Recipient Ratio */
+
+            const totalUsers =
+                users.length;
+
+
+            let providerPercentage = 0;
+            let recipientPercentage = 0;
+
+
+            if (totalUsers > 0) {
+
+                providerPercentage =
+                    Math.round(
+                        (providers.length / totalUsers) * 100
+                    );
+
+
+                recipientPercentage =
+                    100 - providerPercentage;
+
+            }
+
+
+            document.getElementById(
+                "adminRatio"
+            ).textContent =
+                providerPercentage +
+                "% / " +
+                recipientPercentage +
+                "%";
+
+
+            document.getElementById(
+                "adminProgressFill"
+            ).style.width =
+                providerPercentage + "%";
+
+
+            /* ================================
+               FOOD STATISTICS
+            ================================= */
+
+            document.getElementById(
+                "adminFoodListings"
+            ).textContent =
+                foods.length;
+
+
+            /* ================================
+               DONATION STATISTICS
+            ================================= */
+
+            let totalDonated = 0;
+
+
+            requests.forEach(function(request) {
+
+                const status =
+                    String(
+                        request.status || ""
+                    ).toLowerCase();
+
+
+                const donatedQuantity =
+                    Number(
+                        request.donatedQuantity || 0
+                    );
+
+
+                /*
+                 * Count a donation when the request
+                 * has been completed/received OR
+                 * when a donated quantity is recorded.
+                 */
+
+                if (
+                    status === "completed" ||
+                    status === "received" ||
+                    donatedQuantity > 0
+                ) {
+
+                    if (donatedQuantity > 0) {
+
+                        totalDonated +=
+                            donatedQuantity;
+
+                    }
+
+                    else {
+
+                        totalDonated +=
+                            Number(
+                                request.quantity || 0
+                            );
+
+                    }
+
+                }
+
+            });
+
+
+            /* Update donation statistics */
+
+            document.getElementById(
+                "adminDonations"
+            ).textContent =
+                totalDonated;
+
+
+            document.getElementById(
+                "adminWasteReduced"
+            ).textContent =
+                totalDonated;
+
+
+            document.getElementById(
+                "adminImpactMeals"
+            ).textContent =
+                totalDonated;
+
+
+            document.getElementById(
+                "adminImpactDonated"
+            ).textContent =
+                totalDonated;
+
+
+            /* ================================
+               REMAINING SURPLUS
+            ================================= */
+
+            let totalRemaining = 0;
+
+
+            foods.forEach(function(food) {
+
+                totalRemaining +=
+                    Number(food.quantity) || 0;
+
+            });
+
+
+            document.getElementById(
+                "adminImpactRemaining"
+            ).textContent =
+                totalRemaining;
+
+
+            /* ================================
+               IMPACT BAR
+            ================================= */
+
+            const totalHandled =
+                totalDonated +
+                totalRemaining;
+
+
+            let impactPercentage = 0;
+
+
+            if (totalHandled > 0) {
+
+                impactPercentage =
+                    Math.round(
+                        (
+                            totalDonated /
+                            totalHandled
+                        ) * 100
+                    );
+
+            }
+
+
+            document.getElementById(
+                "adminImpactBar"
+            ).style.width =
+                impactPercentage + "%";
+
+
+            /* ================================
+               RECENT FOOD LISTINGS
+            ================================= */
+
+            const foodList =
+                document.getElementById(
+                    "adminFoodList"
+                );
+
+
+            if (foods.length === 0) {
+
+                foodList.innerHTML = `
+
+                    <p style="padding: 20px;">
+                        No food listings available yet.
+                    </p>
+
+                `;
+
+            }
+
+            else {
+
+                const recentFoods =
+                    [...foods]
+                    .reverse()
+                    .slice(0, 5);
+
+
+                foodList.innerHTML =
+                    recentFoods.map(function(food) {
+
+                        let icon = "🍱";
+
+
+                        if (
+                            food.foodType === "Bakery"
+                        ) {
+
+                            icon = "🍞";
+
+                        }
+
+                        else if (
+                            food.foodType === "Fruits"
+                        ) {
+
+                            icon = "🍎";
+
+                        }
+
+                        else if (
+                            food.foodType === "Cooked Meals"
+                        ) {
+
+                            icon = "🥘";
+
+                        }
+
+                        else if (
+                            food.foodType === "Vegetables"
+                        ) {
+
+                            icon = "🥦";
+
+                        }
+
+
+                        let statusClass =
+                            "admin-active";
+
+
+                        let statusText =
+                            "Available";
+
+
+                        if (
+                            food.status === "completed"
+                        ) {
+
+                            statusClass =
+                                "admin-pending";
+
+
+                            statusText =
+                                "Completed";
+
+                        }
+
+
+                        return `
+
+                            <div class="admin-list-item">
+
+                                <div class="admin-list-icon">
+                                    ${icon}
+                                </div>
+
+                                <div class="admin-list-info">
+
+                                    <strong>
+                                        ${food.foodName}
+                                    </strong>
+
+                                    <span>
+                                        ${
+                                            food.providerName ||
+                                            "Provider"
+                                        }
+                                        ·
+                                        ${
+                                            food.quantity || 0
+                                        }
+                                        Meals
+                                    </span>
+
+                                </div>
+
+                                <span
+                                    class="${statusClass}">
+
+                                    ${statusText}
+
+                                </span>
+
+                            </div>
+
+                        `;
+
+                    }).join("");
+
+            }
+
+
+            /* ================================
+               RECENT REQUESTS
+            ================================= */
+
+            const requestTable =
+                document.getElementById(
+                    "adminRequestTable"
+                );
+
+
+            if (requests.length === 0) {
+
+                requestTable.innerHTML = `
+
+                    <div class="request-row request-heading">
+
+                        <span>
+                            Recipient
+                        </span>
+
+                        <span>
+                            Food
+                        </span>
+
+                        <span>
+                            Quantity
+                        </span>
+
+                        <span>
+                            Status
+                        </span>
+
+                    </div>
+
+                    <div style="padding: 20px;">
+
+                        No donation requests yet.
+
+                    </div>
+
+                `;
+
+            }
+
+            else {
+
+                const recentRequests =
+                    [...requests]
+                    .reverse()
+                    .slice(0, 5);
+
+
+                requestTable.innerHTML = `
+
+                    <div class="request-row request-heading">
+
+                        <span>
+                            Recipient
+                        </span>
+
+                        <span>
+                            Food
+                        </span>
+
+                        <span>
+                            Quantity
+                        </span>
+
+                        <span>
+                            Status
+                        </span>
+
+                    </div>
+
+
+                    ${
+                        recentRequests
+                        .map(function(request) {
+
+                            const status =
+                                String(
+                                    request.status ||
+                                    "pending"
+                                ).toLowerCase();
+
+
+                            let statusClass =
+                                "admin-requested";
+
+
+                            let statusText =
+                                "Pending";
+
+
+                            if (
+                                status === "accepted"
+                            ) {
+
+                                statusClass =
+                                    "admin-approved";
+
+                                statusText =
+                                    "Accepted";
+
+                            }
+
+
+                            else if (
+                                status === "completed" ||
+                                status === "received"
+                            ) {
+
+                                statusClass =
+                                    "admin-approved";
+
+                                statusText =
+                                    "Completed";
+
+                            }
+
+
+                            else if (
+                                status === "rejected"
+                            ) {
+
+                                statusClass =
+                                    "admin-pending";
+
+                                statusText =
+                                    "Rejected";
+
+                            }
+
+
+                            return `
+
+                                <div class="request-row">
+
+                                    <span>
+                                        ${
+                                            request.recipientName ||
+                                            "Recipient"
+                                        }
+                                    </span>
+
+                                    <span>
+                                        ${
+                                            request.foodName ||
+                                            "Food"
+                                        }
+                                    </span>
+
+                                    <span>
+                                        ${
+                                            request.quantity || 0
+                                        }
+                                        Meals
+                                    </span>
+
+                                    <span
+                                        class="${statusClass}">
+
+                                        ${statusText}
+
+                                    </span>
+
+                                </div>
+
+                            `;
+
+                        })
+                        .join("")
+                    }
+
+                `;
+
+            }
+
+        }
+
+
+        /* ================================
+           LOAD ADMIN DASHBOARD
+        ================================= */
+
+        document.addEventListener(
+            "DOMContentLoaded",
+            function() {
+
+                loadAdminDashboard();
+
+            }
+        );
+
+    </script>
+
+
+</body>
+
+</html>

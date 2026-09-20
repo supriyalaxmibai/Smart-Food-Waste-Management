@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Recipient Dashboard | SmartFood</title>
+
+    <link rel="stylesheet" href="css/style.css">
+
+</head>
+
+
+<body>
+
+
+    <!-- Navigation -->
+    <header class="navbar">
+
+        <div class="logo">
+            <span>♻</span>
+            SmartFood
+        </div>
+
+        <nav>
+
+            <a href="recipient-dashboard.html">
+                Dashboard
+            </a>
+
+            <a href="available-food.html">
+                Available Food
+            </a>
+
+            <a href="#myRequests">
+                My Requests
+            </a>
+
+        </nav>
+
+        <div class="nav-buttons">
+
+            <a href="index.html" class="login-btn">
+                Logout
+            </a>
+
+        </div>
+
+    </header>
+
+
+
+    <!-- Dashboard -->
+    <main class="dashboard">
+
+
+        <!-- Welcome -->
+        <section class="dashboard-header">
+
+            <div>
+
+                <span class="dashboard-label">
+                    RECIPIENT / NGO
+                </span>
+
+                <h1 id="welcomeMessage">
+                    Welcome back! 👋
+                </h1>
+
+                <p>
+                    Find surplus food and help distribute it to people in need.
+                </p>
+
+            </div>
+
+            <a href="available-food.html"
+               class="dashboard-primary-btn">
+
+                Find Available Food
+
+            </a>
+
+        </section>
+
+
+
+        <!-- Statistics -->
+        <section class="dashboard-stats">
+
+
+            <div class="dashboard-stat-card">
+
+                <div class="stat-icon">
+                    🍱
+                </div>
+
+                <div>
+
+                    <span>
+                        Available Listings
+                    </span>
+
+                    <h2 id="availableListings">
+                        0
+                    </h2>
+
+                </div>
+
+            </div>
+
+
+            <div class="dashboard-stat-card">
+
+                <div class="stat-icon">
+                    📦
+                </div>
+
+                <div>
+
+                    <span>
+                        Meals Requested
+                    </span>
+
+                    <h2 id="mealsRequested">
+                        0
+                    </h2>
+
+                </div>
+
+            </div>
+
+
+            <div class="dashboard-stat-card">
+
+                <div class="stat-icon">
+                    ❤️
+                </div>
+
+                <div>
+
+                    <span>
+                        Meals Received
+                    </span>
+
+                    <h2 id="mealsReceived">
+                        0
+                    </h2>
+
+                </div>
+
+            </div>
+
+
+            <div class="dashboard-stat-card">
+
+                <div class="stat-icon">
+                    🚚
+                </div>
+
+                <div>
+
+                    <span>
+                        Active Requests
+                    </span>
+
+                    <h2 id="activeRequests">
+                        0
+                    </h2>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- Main Grid -->
+        <section class="dashboard-grid">
+
+
+            <!-- Recommended Food -->
+            <div class="dashboard-panel">
+
+                <div class="panel-header">
+
+                    <div>
+
+                        <h2>
+                            Recommended Food
+                        </h2>
+
+                        <p>
+                            Available surplus food near you
+                        </p>
+
+                    </div>
+
+                    <a href="available-food.html">
+                        View All
+                    </a>
+
+                </div>
+
+
+                <div class="food-list"
+                     id="recommendedFoodList">
+
+                    <p style="padding:20px;">
+
+                        Loading available food...
+
+                    </p>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- My Requests -->
+            <div class="dashboard-panel"
+                 id="myRequests">
+
+                <div class="panel-header">
+
+                    <div>
+
+                        <h2>
+                            My Requests
+                        </h2>
+
+                        <p>
+                            Track your food requests and donation status
+                        </p>
+
+                    </div>
+
+                    <span class="request-count"
+                          id="requestCount">
+
+                        0 Active
+
+                    </span>
+
+                </div>
+
+
+                <div class="request-list"
+                     id="requestList">
+
+                    <p style="padding:20px;">
+
+                        No food requests yet.
+
+                    </p>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- Request Status -->
+        <section class="dashboard-panel status-info-panel">
+
+            <div class="panel-header">
+
+                <div>
+
+                    <h2>
+                        Request Status
+                    </h2>
+
+                    <p>
+                        Understand the progress of your food requests
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="status-flow">
+
+
+                <div class="status-step">
+
+                    <div class="status-icon">
+                        📨
+                    </div>
+
+                    <div>
+
+                        <strong>
+                            Pending
+                        </strong>
+
+                        <p>
+                            Request sent to the food provider.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="status-arrow">
+                    →
+                </div>
+
+
+                <div class="status-step">
+
+                    <div class="status-icon">
+                        ✅
+                    </div>
+
+                    <div>
+
+                        <strong>
+                            Accepted
+                        </strong>
+
+                        <p>
+                            Provider accepted your request.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="status-arrow">
+                    →
+                </div>
+
+
+                <div class="status-step">
+
+                    <div class="status-icon">
+                        ❤️
+                    </div>
+
+                    <div>
+
+                        <strong>
+                            Completed
+                        </strong>
+
+                        <p>
+                            Food donation has been completed.
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- Impact -->
+        <section class="impact-panel">
+
+
+            <div class="impact-content">
+
+                <span class="dashboard-label">
+                    YOUR IMPACT
+                </span>
+
+                <h2>
+                    Helping Reduce Food Waste
+                </h2>
+
+                <p>
+                    Your organization has helped redirect surplus food
+                    to people in need instead of allowing it to go to waste.
+                </p>
+
+            </div>
+
+
+            <div class="impact-circle">
+
+                <strong id="impactMeals">
+                    0
+                </strong>
+
+                <span>
+                    Meals Received
+                </span>
+
+            </div>
+
+
+            <div class="impact-details">
+
+
+                <div>
+
+                    <span>
+                        Meals Requested
+                    </span>
+
+                    <strong id="impactRequested">
+                        0
+                    </strong>
+
+                </div>
+
+
+                <div>
+
+                    <span>
+                        Meals Received
+                    </span>
+
+                    <strong id="impactReceived">
+                        0
+                    </strong>
+
+                </div>
+
+
+                <div>
+
+                    <span>
+                        Active Requests
+                    </span>
+
+                    <strong id="impactActive">
+                        0
+                    </strong>
+
+                </div>
+
+
+                <div>
+
+                    <span>
+                        Food Providers
+                    </span>
+
+                    <strong id="impactProviders">
+                        0
+                    </strong>
+
+                </div>
+
+            </div>
+
+        </section>
+
+    </main>
+
+
+
+    <!-- Footer -->
+    <footer>
+
+        <div class="copyright">
+
+            © 2026 Smart Food Waste Reduction and Surplus Food Management System
+
+        </div>
+
+    </footer>
+
+
+
+    <script src="js/script.js"></script>
+
+</body>
+
+</html>

@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Waste Tracker | SmartFood</title>
+
+    <link rel="stylesheet" href="css/style.css">
+
+</head>
+
+
+<body>
+
+    <!-- Navigation Bar -->
+
+    <header class="navbar">
+
+        <div class="logo">
+            <span>♻</span>
+            SmartFood
+        </div>
+
+        <nav>
+
+            <a href="provider-dashboard.html">
+                Dashboard
+            </a>
+
+            <a href="add-food.html">
+                Add Food
+            </a>
+
+            <a href="waste-tracker.html">
+                Waste Tracker
+            </a>
+
+            <a href="analytics.html">
+                Analytics
+            </a>
+
+        </nav>
+
+        <div class="nav-buttons">
+
+            <a href="index.html" class="login-btn">
+                Logout
+            </a>
+
+        </div>
+
+    </header>
+
+
+    <!-- Waste Tracker -->
+
+    <main class="waste-tracker-page">
+
+
+        <!-- Header -->
+
+        <section class="waste-header">
+
+            <div>
+
+                <span class="dashboard-label">
+                    FOOD WASTE MANAGEMENT
+                </span>
+
+                <h1>
+                    Food Waste Tracker
+                </h1>
+
+                <p>
+                    Track prepared, consumed, donated and wasted
+                    food to understand your food waste.
+                </p>
+
+            </div>
+
+            <div class="waste-date">
+
+                <span>
+                    Tracking Period
+                </span>
+
+                <strong>
+                    Today
+                </strong>
+
+            </div>
+
+        </section>
+
+
+        <!-- Input Section -->
+
+        <section class="waste-input-panel">
+
+            <div class="panel-header">
+
+                <div>
+
+                    <h2>
+                        Today's Food Record
+                    </h2>
+
+                    <p>
+                        Enter the amount of food prepared,
+                        consumed and donated.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="waste-input-grid">
+
+
+                <div class="waste-input-card">
+
+                    <div class="waste-input-icon">
+                        🍳
+                    </div>
+
+                    <label>
+                        Food Prepared
+                    </label>
+
+                    <input
+                        type="number"
+                        id="preparedFood"
+                        value="100"
+                        min="0"
+                    >
+
+                    <span>
+                        Meals
+                    </span>
+
+                </div>
+
+
+                <div class="waste-input-card">
+
+                    <div class="waste-input-icon">
+                        🍽️
+                    </div>
+
+                    <label>
+                        Food Consumed
+                    </label>
+
+                    <input
+                        type="number"
+                        id="consumedFood"
+                        value="70"
+                        min="0"
+                    >
+
+                    <span>
+                        Meals
+                    </span>
+
+                </div>
+
+
+                <div class="waste-input-card">
+
+                    <div class="waste-input-icon">
+                        ❤️
+                    </div>
+
+                    <label>
+                        Food Donated
+                    </label>
+
+                    <input
+                        type="number"
+                        id="donatedFood"
+                        value="20"
+                        min="0"
+                    >
+
+                    <span>
+                        Meals
+                    </span>
+
+                </div>
+
+
+                <div class="waste-input-card waste-result-card">
+
+                    <div class="waste-input-icon">
+                        ♻
+                    </div>
+
+                    <label>
+                        Food Wasted
+                    </label>
+
+                    <strong id="wastedFood">
+                        10
+                    </strong>
+
+                    <span>
+                        Meals
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <button
+                class="calculate-waste-btn"
+                onclick="calculateWaste()"
+            >
+                Calculate Food Waste
+            </button>
+
+        </section>
+
+
+        <!-- Formula -->
+
+        <section class="waste-formula">
+
+            <div class="formula-icon">
+                🧮
+            </div>
+
+            <div>
+
+                <h3>
+                    Waste Calculation
+                </h3>
+
+                <p>
+                    Food Wasted =
+                    Food Prepared − Food Consumed − Food Donated
+                </p>
+
+                <strong id="formulaResult">
+                    100 − 70 − 20 = 10 Meals Wasted
+                </strong>
+
+            </div>
+
+        </section>
+
+
+        <!-- Impact Summary -->
+
+        <section class="waste-impact">
+
+            <div class="section-title-left">
+
+                <span>
+                    TODAY'S IMPACT
+                </span>
+
+                <h2>
+                    Your Food Waste Summary
+                </h2>
+
+            </div>
+
+
+            <div class="impact-grid">
+
+
+                <div class="impact-card">
+
+                    <div class="impact-card-icon">
+                        🍳
+                    </div>
+
+                    <h3 id="summaryPrepared">
+                        100
+                    </h3>
+
+                    <p>
+                        Meals Prepared
+                    </p>
+
+                </div>
+
+
+                <div class="impact-card">
+
+                    <div class="impact-card-icon">
+                        🍽️
+                    </div>
+
+                    <h3 id="summaryConsumed">
+                        70
+                    </h3>
+
+                    <p>
+                        Meals Consumed
+                    </p>
+
+                </div>
+
+
+                <div class="impact-card">
+
+                    <div class="impact-card-icon">
+                        ❤️
+                    </div>
+
+                    <h3 id="summaryDonated">
+                        20
+                    </h3>
+
+                    <p>
+                        Meals Donated
+                    </p>
+
+                </div>
+
+
+                <div class="impact-card">
+
+                    <div class="impact-card-icon">
+                        ♻
+                    </div>
+
+                    <h3 id="summaryWasted">
+                        10
+                    </h3>
+
+                    <p>
+                        Meals Wasted
+                    </p>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- Recommendation -->
+
+        <section class="waste-recommendation">
+
+            <div class="recommendation-icon">
+                💡
+            </div>
+
+            <div>
+
+                <h3>
+                    Smart Recommendation
+                </h3>
+
+                <p id="recommendationText">
+                    Your current food waste is
+                    <strong>10 meals</strong>.
+                    Consider listing unused surplus food earlier
+                    so it can be donated before the availability
+                    time expires.
+                </p>
+
+            </div>
+
+        </section>
+
+
+    </main>
+
+
+    <!-- Footer -->
+
+    <footer>
+
+        <div class="footer-content">
+
+            <div>
+
+                <h3>
+                    ♻ SmartFood
+                </h3>
+
+                <p>
+                    Smart food management for a sustainable future.
+                </p>
+
+            </div>
+
+            <div class="footer-links">
+
+                <a href="index.html">
+                    Home
+                </a>
+
+                <a href="provider-dashboard.html">
+                    Dashboard
+                </a>
+
+                <a href="analytics.html">
+                    Analytics
+                </a>
+
+            </div>
+
+        </div>
+
+        <div class="copyright">
+
+            © 2026 Smart Food Waste Reduction and
+            Surplus Food Management System
+
+        </div>
+
+    </footer>
+
+
+    <!-- Waste Tracker JavaScript -->
+
+    <script>
+
+        function calculateWaste() {
+
+            const prepared =
+                Number(document.getElementById("preparedFood").value) || 0;
+
+            const consumed =
+                Number(document.getElementById("consumedFood").value) || 0;
+
+            const donated =
+                Number(document.getElementById("donatedFood").value) || 0;
+
+
+            let wasted =
+                prepared - consumed - donated;
+
+
+            if (wasted < 0) {
+                wasted = 0;
+            }
+
+
+            /* Update Waste Result */
+
+            document.getElementById("wastedFood").textContent =
+                wasted;
+
+
+            /* Update Formula */
+
+            document.getElementById("formulaResult").textContent =
+                prepared + " − " +
+                consumed + " − " +
+                donated + " = " +
+                wasted +
+                " Meals Wasted";
+
+
+            /* Update Summary Cards */
+
+            document.getElementById("summaryPrepared").textContent =
+                prepared;
+
+            document.getElementById("summaryConsumed").textContent =
+                consumed;
+
+            document.getElementById("summaryDonated").textContent =
+                donated;
+
+            document.getElementById("summaryWasted").textContent =
+                wasted;
+
+
+            /* Update Recommendation */
+
+            document.getElementById("recommendationText").innerHTML =
+                "Your current food waste is <strong>" +
+                wasted +
+                " meals</strong>. Consider listing unused surplus food earlier " +
+                "so it can be donated before the availability time expires.";
+
+
+            /* Save Data */
+
+            const wasteData = {
+
+                prepared: prepared,
+
+                consumed: consumed,
+
+                donated: donated,
+
+                wasted: wasted,
+
+                updatedAt: new Date().toISOString()
+
+            };
+
+
+            localStorage.setItem(
+                "smartfood_wasteData",
+                JSON.stringify(wasteData)
+            );
+
+
+            alert("Food waste data saved successfully!");
+
+        }
+
+
+        /* Load Previously Saved Data */
+
+        function loadWasteData() {
+
+            const savedData =
+                localStorage.getItem("smartfood_wasteData");
+
+
+            if (!savedData) {
+                return;
+            }
+
+
+            const wasteData =
+                JSON.parse(savedData);
+
+
+            document.getElementById("preparedFood").value =
+                wasteData.prepared;
+
+            document.getElementById("consumedFood").value =
+                wasteData.consumed;
+
+            document.getElementById("donatedFood").value =
+                wasteData.donated;
+
+            document.getElementById("wastedFood").textContent =
+                wasteData.wasted;
+
+
+            document.getElementById("formulaResult").textContent =
+                wasteData.prepared + " − " +
+                wasteData.consumed + " − " +
+                wasteData.donated + " = " +
+                wasteData.wasted +
+                " Meals Wasted";
+
+
+            document.getElementById("summaryPrepared").textContent =
+                wasteData.prepared;
+
+            document.getElementById("summaryConsumed").textContent =
+                wasteData.consumed;
+
+            document.getElementById("summaryDonated").textContent =
+                wasteData.donated;
+
+            document.getElementById("summaryWasted").textContent =
+                wasteData.wasted;
+
+
+            document.getElementById("recommendationText").innerHTML =
+                "Your current food waste is <strong>" +
+                wasteData.wasted +
+                " meals</strong>. Consider listing unused surplus food earlier " +
+                "so it can be donated before the availability time expires.";
+
+        }
+
+
+        /* Load Saved Data When Page Opens */
+
+        window.onload = loadWasteData;
+
+    </script>
+
+
+</body>
+
+</html>

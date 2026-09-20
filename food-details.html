@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Food Details | SmartFood</title>
+
+    <link rel="stylesheet" href="css/style.css">
+
+</head>
+
+
+<body>
+
+    <!-- Navigation Bar -->
+
+    <header class="navbar">
+
+        <div class="logo">
+            <span>♻</span>
+            SmartFood
+        </div>
+
+        <nav>
+
+            <a href="recipient-dashboard.html">
+                Dashboard
+            </a>
+
+            <a href="available-food.html">
+                Available Food
+            </a>
+
+            <a href="#">
+                My Requests
+            </a>
+
+        </nav>
+
+        <div class="nav-buttons">
+
+            <a href="index.html" class="login-btn">
+                Logout
+            </a>
+
+        </div>
+
+    </header>
+
+
+    <!-- Food Details -->
+
+    <main class="food-details-page">
+
+        <a href="available-food.html" class="back-link">
+            ← Back to Available Food
+        </a>
+
+
+        <section class="food-details-container">
+
+
+            <!-- Left Side -->
+
+            <div class="food-details-main">
+
+                <div class="large-food-icon">
+                    🍱
+                </div>
+
+                <div class="food-title-row">
+
+                    <div>
+
+                        <span class="available-label">
+                            ● Available
+                        </span>
+
+                        <h1 id="foodName">
+                            Food Name
+                        </h1>
+
+                        <p class="details-provider" id="providerName">
+                            Provided by Food Provider
+                        </p>
+
+                    </div>
+
+                    <span class="large-match-badge">
+                        Smart Match
+                    </span>
+
+                </div>
+
+
+                <!-- Description -->
+
+                <div class="details-section">
+
+                    <h2>
+                        Food Description
+                    </h2>
+
+                    <p id="foodDescription">
+                        Food description will appear here.
+                    </p>
+
+                </div>
+
+
+                <!-- Food Information -->
+
+                <div class="details-section">
+
+                    <h2>
+                        Food Information
+                    </h2>
+
+                    <div class="food-info-grid">
+
+                        <div class="food-info-box">
+
+                            <span>🍽️</span>
+
+                            <div>
+                                <small>Quantity Available</small>
+                                <strong id="foodQuantity">
+                                    0 Meals
+                                </strong>
+                            </div>
+
+                        </div>
+
+
+                        <div class="food-info-box">
+
+                            <span>⏰</span>
+
+                            <div>
+                                <small>Available Until</small>
+                                <strong id="foodAvailableUntil">
+                                    --
+                                </strong>
+                            </div>
+
+                        </div>
+
+
+                        <div class="food-info-box">
+
+                            <span>📍</span>
+
+                            <div>
+                                <small>Location</small>
+                                <strong id="foodLocation">
+                                    --
+                                </strong>
+                            </div>
+
+                        </div>
+
+
+                        <div class="food-info-box">
+
+                            <span>🥗</span>
+
+                            <div>
+                                <small>Food Type</small>
+                                <strong id="foodType">
+                                    --
+                                </strong>
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- Pickup Information -->
+
+                <div class="details-section">
+
+                    <h2>
+                        Pickup Information
+                    </h2>
+
+                    <p>
+                        The recipient organization should arrange
+                        pickup from the provider location before
+                        the stated availability time.
+                    </p>
+
+                    <div class="pickup-box" id="pickupLocation">
+
+                        📍 Provider Location
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- Right Side -->
+
+            <aside class="food-request-card">
+
+                <div class="request-card-header">
+
+                    <span>
+                        Request Surplus Food
+                    </span>
+
+                </div>
+
+
+                <div class="request-summary">
+
+                    <div>
+
+                        <small>
+                            Available
+                        </small>
+
+                        <strong id="requestAvailable">
+                            0 Meals
+                        </strong>
+
+                    </div>
+
+                    <div>
+
+                        <small>
+                            Expires
+                        </small>
+
+                        <strong id="requestExpires">
+                            --
+                        </strong>
+
+                    </div>
+
+                </div>
+
+
+                <label>
+                    Quantity Required
+                </label>
+
+                <input
+                    type="number"
+                    id="requestQuantity"
+                    value="1"
+                    min="1"
+                >
+
+
+                <label>
+                    Request Message
+                </label>
+
+                <textarea
+                    id="requestMessage"
+                    rows="5"
+                    placeholder="Enter a message for the food provider..."
+                ></textarea>
+
+
+                <button
+                    class="request-food-btn"
+                    onclick="requestFood()"
+                >
+                    Request Food
+                </button>
+
+
+                <p class="request-note">
+                    Your request will be sent to the food provider
+                    for approval.
+                </p>
+
+            </aside>
+
+
+        </section>
+
+    </main>
+
+
+    <!-- Footer -->
+
+    <footer>
+
+        <div class="footer-content">
+
+            <div>
+
+                <h3>
+                    ♻ SmartFood
+                </h3>
+
+                <p>
+                    Smart food management for a sustainable future.
+                </p>
+
+            </div>
+
+            <div class="footer-links">
+
+                <a href="recipient-dashboard.html">
+                    Dashboard
+                </a>
+
+                <a href="available-food.html">
+                    Available Food
+                </a>
+
+                <a href="index.html">
+                    Home
+                </a>
+
+            </div>
+
+        </div>
+
+        <div class="copyright">
+
+            © 2026 Smart Food Waste Reduction and
+            Surplus Food Management System
+
+        </div>
+
+    </footer>
+
+
+    <!-- JavaScript -->
+
+    <script src="js/script.js"></script>
+
+</body>
+
+</html>

@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Available Food | SmartFood</title>
+
+    <link rel="stylesheet" href="css/style.css">
+
+</head>
+
+
+<body>
+
+    <!-- Navigation Bar -->
+
+    <header class="navbar">
+
+        <div class="logo">
+            <span>♻</span>
+            SmartFood
+        </div>
+
+        <nav>
+
+            <a href="recipient-dashboard.html">
+                Dashboard
+            </a>
+
+            <a href="available-food.html">
+                Available Food
+            </a>
+
+            <a href="#">
+                My Requests
+            </a>
+
+        </nav>
+
+        <div class="nav-buttons">
+
+            <a href="index.html" class="login-btn">
+                Logout
+            </a>
+
+        </div>
+
+    </header>
+
+
+    <!-- Available Food Page -->
+
+    <main class="available-food-page">
+
+
+        <!-- Page Header -->
+
+        <section class="food-market-header">
+
+            <div>
+
+                <span class="dashboard-label">
+                    SURPLUS FOOD MARKETPLACE
+                </span>
+
+                <h1>
+                    Available Surplus Food
+                </h1>
+
+                <p>
+                    Find surplus food available for donation
+                    from nearby food providers.
+                </p>
+
+            </div>
+
+            <div class="smart-match-header">
+
+                <span>✨</span>
+
+                <div>
+
+                    <strong>
+                        Smart Match
+                    </strong>
+
+                    <small>
+                        Find food based on your needs
+                    </small>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- Search and Filters -->
+
+        <section class="food-filter-bar">
+
+            <input
+                type="text"
+                id="foodSearch"
+                placeholder="🔍 Search food..."
+            >
+
+            <select id="foodTypeFilter">
+
+                <option value="all">
+                    All Food Types
+                </option>
+
+                <option value="rice">
+                    Rice / Meals
+                </option>
+
+                <option value="curry">
+                    Curry / Vegetables
+                </option>
+
+                <option value="bread">
+                    Bread / Bakery
+                </option>
+
+                <option value="fruits">
+                    Fruits
+                </option>
+
+                <option value="snacks">
+                    Snacks
+                </option>
+
+                <option value="other">
+                    Other
+                </option>
+
+            </select>
+
+
+            <select id="locationFilter">
+
+                <option value="all">
+                    All Locations
+                </option>
+
+                <option value="Hyderabad">
+                    Hyderabad
+                </option>
+
+                <option value="Secunderabad">
+                    Secunderabad
+                </option>
+
+                <option value="Kukatpally">
+                    Kukatpally
+                </option>
+
+                <option value="Gachibowli">
+                    Gachibowli
+                </option>
+
+            </select>
+
+
+            <button
+                class="filter-btn"
+                type="button"
+                onclick="filterFoods()"
+            >
+                Apply Filters
+            </button>
+
+        </section>
+
+
+        <!-- Smart Match Information -->
+
+        <section class="smart-match-info">
+
+            <div class="smart-match-icon">
+                ✨
+            </div>
+
+            <div>
+
+                <h3>
+                    Smart Matching
+                </h3>
+
+                <p>
+                    Food listings are matched using food type,
+                    required quantity, location and availability time.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- Food Listings -->
+
+        <section
+            class="food-market-grid"
+            id="availableFoodList"
+        >
+
+            <!-- Food listings will be loaded here using JavaScript -->
+
+        </section>
+
+
+    </main>
+
+
+    <!-- Footer -->
+
+    <footer>
+
+        <div class="footer-content">
+
+            <div>
+
+                <h3>
+                    ♻ SmartFood
+                </h3>
+
+                <p>
+                    Smart food management for a sustainable future.
+                </p>
+
+            </div>
+
+            <div class="footer-links">
+
+                <a href="recipient-dashboard.html">
+                    Dashboard
+                </a>
+
+                <a href="available-food.html">
+                    Available Food
+                </a>
+
+                <a href="index.html">
+                    Home
+                </a>
+
+            </div>
+
+        </div>
+
+        <div class="copyright">
+
+            © 2026 Smart Food Waste Reduction and
+            Surplus Food Management System
+
+        </div>
+
+    </footer>
+
+
+    <!-- JavaScript -->
+
+    <script src="js/script.js"></script>
+
+
+</body>
+
+</html>
